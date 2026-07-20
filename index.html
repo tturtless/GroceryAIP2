@@ -625,10 +625,12 @@
     position: fixed;
     bottom: max(60px, calc(20px + env(safe-area-inset-bottom)));
     right: max(20px, env(safe-area-inset-right));
-    left: max(20px, env(safe-area-inset-left));
     display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
     z-index: 9999;
+    max-width: calc(100vw - 40px);
+    pointer-events: none;
   }
+  .toast { pointer-events: auto; }
   .toast {
     padding: 10px 16px;
     border-radius: var(--radius);
