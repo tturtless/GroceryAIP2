@@ -1,1685 +1,1072 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<title>Palantir AIP Culinary & Grocery Orchestrator</title>
-<style>
-  /* ===== DESIGN TOKENS ===== */
-  :root {
-    --navy-950: #070D1A;
-    --navy-900: #0F1729;
-    --navy-800: #162035;
-    --navy-700: #1E2D45;
-    --navy-600: #263650;
-    --navy-500: #2E4060;
-    --slate-400: #6B7FA3;
-    --slate-300: #8D9EBF;
-    --slate-200: #B8C4DA;
-    --slate-100: #E2E7F0;
-    --white: #FFFFFF;
-    --surface: #F4F7FC;
-    --card: #FFFFFF;
-    --emerald-500: #10B981;
-    --emerald-400: #34D399;
-    --emerald-600: #059669;
-    --emerald-900: #064E3B;
-    --amber-500: #F59E0B;
-    --amber-100: #FEF3C7;
-    --red-500: #EF4444;
-    --red-100: #FEE2E2;
-    --blue-400: #60A5FA;
-    --blue-500: #3B82F6;
-    --purple-400: #A78BFA;
-    --border: rgba(255,255,255,0.07);
-    --border-light: #E2E7F0;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
-    --shadow-md: 0 4px 16px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.1);
-    --shadow-lg: 0 10px 40px rgba(0,0,0,0.25);
-    --radius: 8px;
-    --radius-lg: 12px;
-    --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-    --transition: all 0.18s cubic-bezier(0.4,0,0.2,1);
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>AIP GROCERY CONSOLE</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
-  /* ===== RESET & BASE ===== */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; height: 100dvh; overflow: hidden; }
-  body {
-    font-family: var(--font-sans);
-    background: var(--navy-900);
-    color: var(--white);
-    font-size: 13px;
-    line-height: 1.5;
-    display: flex;
-    flex-direction: column;
-  }
+    :root {
+      --void: #060913;
+      --surface: #0A0F1D;
+      --surface2: #0D1526;
+      --border: #1E293B;
+      --border2: #243044;
+      --cyan: #00F0FF;
+      --cyan-dim: rgba(0,240,255,0.12);
+      --cyan-glow: rgba(0,240,255,0.25);
+      --amber: #FFB800;
+      --amber-dim: rgba(255,184,0,0.12);
+      --green: #00FF88;
+      --green-dim: rgba(0,255,136,0.1);
+      --red: #FF3B5C;
+      --red-dim: rgba(255,59,92,0.12);
+      --purple: #A855F7;
+      --purple-dim: rgba(168,85,247,0.12);
+      --text-primary: #E2E8F0;
+      --text-secondary: #64748B;
+      --text-muted: #334155;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
 
-  /* ===== SCROLLBAR ===== */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--navy-500); border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--slate-400); }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 
-  /* ===== HEADER ===== */
-  .app-header {
-    background: var(--navy-950);
-    border-bottom: 1px solid var(--border);
-    padding: 0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));
-    padding-top: env(safe-area-inset-top);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: calc(52px + env(safe-area-inset-top));
-    flex-shrink: 0;
-    position: relative;
-    z-index: 100;
-    gap: 10px;
-  }
-  .header-left { display: flex; align-items: center; gap: 12px; }
-  .logo-mark {
-    width: 32px; height: 32px;
-    background: linear-gradient(135deg, var(--emerald-600), var(--emerald-400));
-    border-radius: 7px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    box-shadow: 0 0 12px rgba(16,185,129,0.35);
-    flex-shrink: 0;
-  }
-  .header-title {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    color: var(--white);
-  }
-  .header-sub {
-    font-size: 10px;
-    color: var(--slate-400);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-top: 1px;
-  }
-  .header-right { display: flex; align-items: center; gap: 10px; }
+    html, body {
+      height: 100%; height: 100dvh;
+      margin: 0; padding: 0;
+      overflow: hidden;
+      background: var(--void);
+      color: var(--text-primary);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
 
-  .pill-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 9px;
-    border-radius: 20px;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-  }
-  .pill-badge.offline { background: rgba(239,68,68,0.12); color: var(--red-500); border: 1px solid rgba(239,68,68,0.2); }
-  .pill-badge.online { background: rgba(16,185,129,0.12); color: var(--emerald-400); border: 1px solid rgba(16,185,129,0.2); }
-  .pill-badge .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-  .pill-badge.online .dot { animation: pulse-dot 2s infinite; }
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
-  }
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--void);
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+    }
 
-  .btn-header {
-    display: flex; align-items: center; gap: 6px;
-    padding: 5px 12px;
-    background: var(--navy-700);
-    border: 1px solid rgba(255,255,255,0.08);
-    color: var(--slate-200);
-    border-radius: var(--radius);
-    cursor: pointer;
-    font-size: 11.5px;
-    font-weight: 500;
-    transition: var(--transition);
-    letter-spacing: 0.02em;
-  }
-  .btn-header:hover { background: var(--navy-600); border-color: rgba(255,255,255,0.14); color: var(--white); }
-  .btn-header.active { background: var(--navy-600); border-color: rgba(16,185,129,0.3); color: var(--emerald-400); }
-  .btn-header-label-short { display: none; }
+    #app::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
+      pointer-events: none;
+      z-index: 1000;
+    }
 
-  /* ===== SETTINGS DRAWER ===== */
-  .settings-drawer {
-    position: fixed;
-    top: calc(52px + env(safe-area-inset-top)); right: 0;
-    width: 380px;
-    height: calc(100vh - 52px - env(safe-area-inset-top));
-    height: calc(100dvh - 52px - env(safe-area-inset-top));
-    padding-right: env(safe-area-inset-right);
-    padding-bottom: env(safe-area-inset-bottom);
-    background: var(--navy-800);
-    border-left: 1px solid var(--border);
-    z-index: 99;
-    transform: translateX(100%);
-    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    display: flex; flex-direction: column;
-  }
-  .settings-drawer.open { transform: translateX(0); }
-  .drawer-header {
-    padding: 18px 20px 14px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0;
-  }
-  .drawer-title { font-size: 13px; font-weight: 600; color: var(--white); }
-  .drawer-sub { font-size: 10.5px; color: var(--slate-400); margin-top: 2px; }
-  .drawer-close {
-    width: 26px; height: 26px;
-    background: var(--navy-700);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--slate-300);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-    transition: var(--transition);
-  }
-  .drawer-close:hover { background: var(--navy-600); color: var(--white); }
-  .drawer-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 20px; flex: 1; }
-  .drawer-section-label {
-    font-size: 9.5px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--slate-400);
-    margin-bottom: 10px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
-  }
+    /* ══ HUD ══ */
+    #hud {
+      flex: 0 0 20dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(0,240,255,0.04) 0%, transparent 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    #hud::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    }
+    .hud-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .sys-label { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; color: var(--cyan); text-transform: uppercase; }
+    .sys-id { font-family: var(--mono); font-size: 8px; color: var(--text-secondary); letter-spacing: 0.1em; }
+    .hud-metrics { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: nowrap; }
+    .metric-chip { display: flex; align-items: center; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 3px 7px; }
+    .metric-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .metric-dot.green { background: var(--green); box-shadow: 0 0 5px var(--green); animation: pulse 2s infinite; }
+    .metric-dot.amber { background: var(--amber); box-shadow: 0 0 5px var(--amber); }
+    .metric-dot.cyan  { background: var(--cyan);  box-shadow: 0 0 5px var(--cyan); }
+    .metric-dot.red   { background: var(--red);   box-shadow: 0 0 5px var(--red); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .metric-val { font-family: var(--mono); font-size: 9px; color: var(--text-primary); white-space: nowrap; }
 
-  /* ===== FORM CONTROLS ===== */
-  .field-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
-  .field-label { font-size: 11px; font-weight: 500; color: var(--slate-300); }
-  .field-input {
-    width: 100%;
-    background: var(--navy-900);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: var(--radius);
-    padding: 7px 10px;
-    color: var(--white);
-    font-size: 12px;
-    font-family: var(--font-sans);
-    outline: none;
-    transition: var(--transition);
-  }
-  .field-input:focus { border-color: rgba(16,185,129,0.4); box-shadow: 0 0 0 3px rgba(16,185,129,0.07); }
-  .field-input::placeholder { color: var(--slate-400); }
-  select.field-input { cursor: pointer; }
-  select.field-input option { background: var(--navy-900); }
+    /* HUD store selector row */
+    .hud-store-row { display: flex; gap: 6px; margin-bottom: 7px; }
+    .store-select {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      color: var(--text-primary);
+      font-family: var(--mono);
+      font-size: 9px;
+      padding: 5px 8px;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+    }
+    .store-select:focus { outline: none; border-color: var(--cyan); }
+    .store-select option { background: #0D1526; }
 
-  .api-status-row { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
-  .api-status-text { font-size: 11px; color: var(--slate-400); }
+    #sync-btn {
+      flex: 0 0 auto;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 5px 12px;
+      border-radius: 5px;
+      border: 1px solid var(--cyan);
+      background: linear-gradient(135deg, rgba(0,240,255,0.1), rgba(0,240,255,0.04));
+      color: var(--cyan);
+      font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      cursor: pointer; transition: all 0.15s ease;
+    }
+    #sync-btn:active { transform: scale(0.97); }
+    #sync-btn.syncing { border-color: var(--amber); color: var(--amber); }
+    #sync-btn.synced  { border-color: var(--green); color: var(--green); }
 
-  .store-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .store-tag {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 3px 8px;
-    background: var(--navy-700);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px;
-    font-size: 11px;
-    color: var(--slate-200);
-  }
-  .store-tag-remove {
-    cursor: pointer; color: var(--slate-400); font-size: 13px; line-height: 1;
-    background: none; border: none; padding: 0; color: var(--slate-400);
-  }
-  .store-tag-remove:hover { color: var(--red-500); }
+    /* ALERT BANNER */
+    #alert-banner {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      padding: 10px;
+      background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,240,255,0.1));
+      border-bottom: 1px solid var(--green);
+      font-family: var(--mono); font-size: 11px; font-weight: 700;
+      color: var(--green); letter-spacing: 0.2em;
+      transform: translateY(-100%); transition: transform 0.2s ease;
+    }
+    #alert-banner.show { transform: translateY(0); }
 
-  .store-add-row { display: flex; gap: 6px; margin-top: 8px; }
-  .store-add-row .field-input { flex: 1; }
+    /* ══ BUBBLE ZONE ══ */
+    #bubble-zone {
+      flex: 0 0 25dvh;
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 0 8px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .bubble { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; position: relative; flex: 1; }
+    .bubble-ring {
+      width: 54px; height: 54px; border-radius: 50%;
+      border: 2px solid var(--border2); background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; transition: all 0.2s ease;
+    }
+    .bubble.active .bubble-ring {
+      border-color: var(--cyan); background: var(--cyan-dim);
+      box-shadow: 0 0 16px var(--cyan-glow), inset 0 0 12px rgba(0,240,255,0.08);
+    }
+    .bubble-icon { font-size: 18px; line-height: 1; }
+    .bubble-badge {
+      position: absolute; top: -2px; right: -2px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--amber); border: 2px solid var(--void);
+      font-family: var(--mono); font-size: 7px; font-weight: 700; color: #000;
+      display: none; align-items: center; justify-content: center;
+    }
+    .bubble-badge.visible { display: flex; }
+    .bubble-label { font-family: var(--mono); font-size: 7px; font-weight: 600; letter-spacing: 0.06em; color: var(--text-secondary); text-align: center; line-height: 1.3; text-transform: uppercase; }
+    .bubble.active .bubble-label { color: var(--cyan); }
+    .bubble::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 3px; border-radius: 2px; background: var(--cyan); transition: width 0.2s ease; }
+    .bubble.active::after { width: 22px; box-shadow: 0 0 8px var(--cyan); }
 
-  .btn-sm {
-    padding: 6px 12px;
-    border-radius: var(--radius);
-    font-size: 11.5px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: var(--transition);
-    letter-spacing: 0.02em;
-    display: inline-flex; align-items: center; gap: 5px;
-    white-space: nowrap;
-  }
-  .btn-primary {
-    background: var(--emerald-600);
-    color: #fff;
-    border: 1px solid rgba(16,185,129,0.3);
-  }
-  .btn-primary:hover { background: var(--emerald-500); box-shadow: 0 0 12px rgba(16,185,129,0.3); }
-  .btn-secondary {
-    background: var(--navy-700);
-    color: var(--slate-200);
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  .btn-secondary:hover { background: var(--navy-600); color: var(--white); }
-  .btn-danger {
-    background: rgba(239,68,68,0.1);
-    color: var(--red-500);
-    border: 1px solid rgba(239,68,68,0.2);
-  }
-  .btn-danger:hover { background: rgba(239,68,68,0.18); }
+    /* ══ OP ZONE ══ */
+    #op-zone { flex: 1 1 0; overflow: hidden; display: flex; flex-direction: column; }
+    .view-panel { display: none; flex-direction: column; height: 100%; overflow: hidden; padding: 10px 14px; }
+    .view-panel.active { display: flex; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-shrink: 0; }
+    .panel-title { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: var(--cyan); text-transform: uppercase; }
+    .panel-meta { font-family: var(--mono); font-size: 8px; color: var(--text-muted); }
 
-  /* ===== MAIN LAYOUT ===== */
-  .app-body {
-    display: grid;
-    grid-template-columns: 300px 1fr 300px;
-    grid-template-rows: 1fr auto;
-    gap: 0;
-    flex: 1;
-    overflow: hidden;
-    min-height: 0;
-  }
+    /* ══ STOCK LOCK STATE ══ */
+    #stock-lock {
+      display: none;
+      flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    }
+    #stock-lock.show { display: flex; }
+    .lock-icon { font-size: 32px; opacity: 0.3; }
+    .lock-msg { font-family: var(--mono); font-size: 10px; color: var(--text-secondary); letter-spacing: 0.12em; text-align: center; line-height: 1.6; }
+    .lock-hint { font-family: var(--mono); font-size: 8px; color: var(--text-muted); letter-spacing: 0.08em; text-align: center; }
 
-  .panel {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-right: 1px solid var(--border);
-  }
-  .panel:last-child { border-right: none; }
-  .panel-header {
-    padding: 12px 16px 11px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0;
-    background: var(--navy-800);
-  }
-  .panel-title {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--slate-300);
-    display: flex; align-items: center; gap: 7px;
-  }
-  .panel-title .icon {
-    width: 20px; height: 20px;
-    border-radius: 5px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px;
-  }
-  .icon-ai { background: rgba(167,139,250,0.15); }
-  .icon-list { background: rgba(16,185,129,0.12); }
-  .icon-store { background: rgba(245,158,11,0.12); }
+    /* ══ STOCK GRID ══ */
+    .stock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; flex: 1; overflow: hidden; }
+    .stock-row { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; position: relative; overflow: hidden; }
+    .stock-row::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
+    .stock-row.ok::before    { background: var(--green); }
+    .stock-row.low::before   { background: var(--amber); }
+    .stock-row.empty::before { background: var(--red); }
+    .stock-name { font-family: var(--sans); font-size: 11px; font-weight: 600; color: var(--text-primary); }
+    .stock-aisle { font-family: var(--mono); font-size: 8px; color: var(--text-secondary); }
+    .stock-status-txt { font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .stock-row.ok    .stock-status-txt { color: var(--green); }
+    .stock-row.low   .stock-status-txt { color: var(--amber); }
+    .stock-row.empty .stock-status-txt { color: var(--red); }
 
-  .panel-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+    /* ══ SHOPPING LIST ══ */
+    #list-empty {
+      display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    }
+    #list-empty.show { display: flex; }
+    .empty-icon { font-size: 28px; opacity: 0.25; }
+    .empty-msg { font-family: var(--mono); font-size: 9px; color: var(--text-secondary); letter-spacing: 0.1em; text-align: center; line-height: 1.6; }
 
-  /* ===== AI PANEL ===== */
-  .ai-mode-badge {
-    font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em;
-    text-transform: uppercase; padding: 2px 7px;
-    border-radius: 20px;
-    background: rgba(167,139,250,0.12);
-    color: var(--purple-400);
-    border: 1px solid rgba(167,139,250,0.2);
-  }
+    .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; flex: 1; overflow: hidden; }
+    .shop-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 9px 10px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; position: relative; overflow: hidden; transition: all 0.15s ease; }
+    .shop-card:active { transform: scale(0.97); }
+    .shop-card.checked { opacity: 0.45; border-color: var(--green); background: rgba(0,255,136,0.05); }
+    .shop-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
+    .shop-name { font-family: var(--sans); font-size: 11px; font-weight: 600; color: var(--text-primary); line-height: 1.2; }
+    .shop-qty { font-family: var(--mono); font-size: 9px; color: var(--cyan); font-weight: 700; }
+    .shop-check { font-size: 13px; opacity: 0; transition: opacity 0.15s; }
+    .shop-card.checked .shop-check { opacity: 1; }
+    .shop-aisle { font-family: var(--mono); font-size: 8px; color: var(--text-secondary); }
+    .shop-status-pill { display: inline-flex; align-items: center; padding: 1px 5px; border-radius: 3px; font-family: var(--mono); font-size: 7px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; align-self: flex-start; }
+    .pill-ok    { background: var(--green-dim);  color: var(--green); }
+    .pill-low   { background: var(--amber-dim);  color: var(--amber); }
+    .pill-empty { background: var(--red-dim);    color: var(--red); }
+    .pill-meal  { background: var(--purple-dim); color: var(--purple); }
 
-  .ai-output-area {
-    background: var(--navy-800);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 14px;
-    min-height: 180px;
-    flex: 1;
-    position: relative;
-    overflow-y: auto;
-  }
-  .ai-output-placeholder {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    height: 100%; gap: 10px;
-    color: var(--slate-400);
-    text-align: center;
-    padding: 20px;
-  }
-  .ai-output-placeholder .ai-icon { font-size: 32px; opacity: 0.4; }
-  .ai-output-placeholder p { font-size: 11.5px; line-height: 1.6; }
+    /* ══ MEAL PREP ══ */
+    .meal-toolbar { display: flex; gap: 6px; margin-bottom: 8px; flex-shrink: 0; }
+    .meal-tool-btn {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+      padding: 7px 0; border-radius: 5px;
+      font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+      cursor: pointer; transition: all 0.15s; text-transform: uppercase; border: 1px solid;
+    }
+    .meal-tool-btn.cyan-btn  { border-color: var(--cyan);   background: var(--cyan-dim);   color: var(--cyan); }
+    .meal-tool-btn.amber-btn { border-color: var(--amber);  background: var(--amber-dim);  color: var(--amber); }
+    .meal-tool-btn.purple-btn{ border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
+    .meal-tool-btn:active { transform: scale(0.97); }
 
-  .ai-output-content {
-    font-size: 12px;
-    line-height: 1.7;
-    color: var(--slate-200);
-  }
-  .ai-output-content h4 {
-    color: var(--emerald-400);
-    font-size: 12px;
-    margin: 10px 0 4px;
-    letter-spacing: 0.03em;
-  }
-  .ai-output-content ul { padding-left: 16px; }
-  .ai-output-content li { margin-bottom: 3px; }
-  .ai-output-content strong { color: var(--white); }
-  .ai-output-content .recipe-meta {
-    display: flex; gap: 12px; flex-wrap: wrap;
-    margin: 8px 0;
-  }
-  .ai-output-content .meta-chip {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 2px 8px;
-    background: var(--navy-700);
-    border-radius: 20px;
-    font-size: 10.5px;
-    color: var(--slate-300);
-  }
+    .meal-list { display: flex; flex-direction: column; gap: 5px; flex: 1; overflow: hidden; }
+    .meal-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; transition: border-color 0.15s; flex-shrink: 0; }
+    .meal-block.expanded { border-color: var(--cyan); }
+    .meal-block.injected-block { border-color: var(--purple); }
+    .meal-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; cursor: pointer; }
+    .meal-title-wrap { display: flex; align-items: center; gap: 8px; }
+    .meal-icon { font-size: 16px; }
+    .meal-name { font-family: var(--sans); font-size: 11px; font-weight: 600; color: var(--text-primary); }
+    .meal-kcal { font-family: var(--mono); font-size: 8px; color: var(--text-secondary); }
+    .meal-header-right { display: flex; align-items: center; gap: 6px; }
+    .meal-injected-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--purple); box-shadow: 0 0 6px var(--purple); display: none; }
+    .meal-block.injected-block .meal-injected-pip { display: block; }
+    .meal-chevron { font-size: 10px; color: var(--text-secondary); transition: transform 0.15s; }
+    .meal-block.expanded .meal-chevron { transform: rotate(90deg); color: var(--cyan); }
+    .meal-detail { display: none; padding: 0 12px 10px; gap: 8px; }
+    .meal-block.expanded .meal-detail { display: flex; }
+    .macro-card { background: var(--void); border: 1px solid var(--border); border-radius: 5px; padding: 7px 10px; flex: 1; }
+    .macro-label { font-family: var(--mono); font-size: 7px; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+    .macro-row { display: flex; justify-content: space-between; }
+    .macro-item { display: flex; flex-direction: column; align-items: center; }
+    .macro-val { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--cyan); line-height: 1; }
+    .macro-key { font-family: var(--mono); font-size: 7px; color: var(--text-secondary); margin-top: 2px; }
+    .meal-detail-right { display: flex; flex-direction: column; gap: 5px; }
+    .inject-btn {
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      padding: 6px 10px; border-radius: 5px;
+      font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: 0.08em;
+      cursor: pointer; transition: all 0.15s; white-space: nowrap; text-transform: uppercase;
+      border: 1px solid var(--purple); background: var(--purple-dim); color: var(--purple);
+    }
+    .inject-btn:active { transform: scale(0.95); }
+    .inject-btn.injected { border-color: var(--red); background: var(--red-dim); color: var(--red); }
+    .ingredients-mini { font-family: var(--mono); font-size: 7px; color: var(--text-muted); line-height: 1.5; }
 
-  .spinner {
-    display: none;
-    width: 24px; height: 24px;
-    border: 2px solid rgba(16,185,129,0.2);
-    border-top-color: var(--emerald-500);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    margin: 0 auto;
-  }
-  .spinner.visible { display: block; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+    /* ══ MODAL OVERLAY ══ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(6,9,19,0.92);
+      display: none; flex-direction: column;
+      padding: 14px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      max-height: 100%;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .modal-title { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: var(--cyan); text-transform: uppercase; }
+    .modal-close { font-size: 16px; color: var(--text-secondary); cursor: pointer; padding: 2px 6px; background: none; border: none; line-height: 1; }
+    .modal-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 10px 14px; -webkit-overflow-scrolling: touch; }
+    .modal-footer { padding: 10px 14px; border-top: 1px solid var(--border); flex-shrink: 0; }
 
-  .btn-consult {
-    width: 100%;
-    padding: 10px;
-    background: linear-gradient(135deg, var(--emerald-600), var(--emerald-500));
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-lg);
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    transition: var(--transition);
-    display: flex; align-items: center; justify-content: center; gap: 7px;
-    box-shadow: 0 2px 12px rgba(16,185,129,0.25);
-  }
-  .btn-consult:hover { box-shadow: 0 4px 20px rgba(16,185,129,0.4); transform: translateY(-1px); }
-  .btn-consult:active { transform: translateY(0); }
-  .btn-consult:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+    /* Meal Library rows */
+    .lib-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .lib-row:last-child { border-bottom: none; }
+    .lib-check { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; }
+    .lib-check.sel { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
+    .lib-info { flex: 1; }
+    .lib-name { font-family: var(--sans); font-size: 11px; font-weight: 600; color: var(--text-primary); }
+    .lib-ingr { font-family: var(--mono); font-size: 8px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+    .lib-macro { font-family: var(--mono); font-size: 8px; color: var(--cyan); text-align: right; flex-shrink: 0; line-height: 1.6; }
 
-  .add-to-list-btn {
-    margin-top: 8px;
-    display: none;
-  }
+    /* 5-day prep result */
+    .prep-section-label { font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em; color: var(--text-secondary); text-transform: uppercase; margin: 10px 0 6px; }
+    .prep-day-row { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); }
+    .prep-day-name { font-family: var(--sans); font-size: 10px; font-weight: 600; color: var(--text-primary); }
+    .prep-day-meals { font-family: var(--mono); font-size: 8px; color: var(--text-muted); }
+    .prep-ingr-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(30,41,59,0.5); }
+    .prep-ingr-name { font-family: var(--sans); font-size: 11px; color: var(--text-primary); }
+    .prep-ingr-qty { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--cyan); }
+    .prep-ingr-aisle { font-family: var(--mono); font-size: 8px; color: var(--text-muted); }
+    .add-list-btn {
+      width: 100%; padding: 9px; border-radius: 6px;
+      border: 1px solid var(--green); background: var(--green-dim); color: var(--green);
+      font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+      cursor: pointer; text-transform: uppercase;
+    }
+    .add-list-btn:active { transform: scale(0.98); }
 
-  /* ===== CENTER PANEL: SHOPPING LIST ===== */
-  .quick-add-bar {
-    background: var(--navy-800);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 12px;
-    display: flex; flex-direction: column; gap: 8px;
-    flex-shrink: 0;
-  }
-  .quick-add-bar .row { display: flex; gap: 6px; }
-  .quick-add-bar .field-input { background: var(--navy-900); }
-  .quick-add-row { display: flex; gap: 6px; align-items: flex-end; flex-wrap: wrap; }
-
-  /* ===== LIST TABLE ===== */
-  .list-table-wrap {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    background: var(--navy-800);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-  }
-  .list-table { min-width: 480px; }
-  .list-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .list-table thead th {
-    padding: 9px 12px;
-    text-align: left;
-    font-size: 9.5px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--slate-400);
-    border-bottom: 1px solid var(--border);
-    background: var(--navy-900);
-    position: sticky; top: 0; z-index: 2;
-    white-space: nowrap;
-  }
-  .list-table tbody tr {
-    border-bottom: 1px solid var(--border);
-    transition: var(--transition);
-  }
-  .list-table tbody tr:last-child { border-bottom: none; }
-  .list-table tbody tr:hover { background: rgba(255,255,255,0.025); }
-  .list-table tbody tr.completed { opacity: 0.45; }
-  .list-table tbody tr.completed td { text-decoration: line-through; color: var(--slate-400); }
-  .list-table tbody td {
-    padding: 9px 12px;
-    font-size: 12px;
-    vertical-align: middle;
-    color: var(--slate-200);
-  }
-
-  .item-check {
-    width: 15px; height: 15px;
-    accent-color: var(--emerald-500);
-    cursor: pointer;
-  }
-
-  .item-name { font-weight: 500; color: var(--white); font-size: 12.5px; }
-  .item-name-sub { font-size: 10px; color: var(--slate-400); }
-
-  .cat-badge {
-    display: inline-block;
-    padding: 2px 7px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  .cat-produce { background: rgba(16,185,129,0.12); color: var(--emerald-400); }
-  .cat-meat { background: rgba(239,68,68,0.1); color: #F87171; }
-  .cat-dairy { background: rgba(96,165,250,0.12); color: var(--blue-400); }
-  .cat-pantry { background: rgba(245,158,11,0.1); color: var(--amber-500); }
-  .cat-bakery { background: rgba(167,139,250,0.1); color: var(--purple-400); }
-  .cat-frozen { background: rgba(147,197,253,0.1); color: #93C5FD; }
-  .cat-beverages { background: rgba(52,211,153,0.1); color: #34D399; }
-
-  .stock-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 2px 7px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  .stock-badge .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-  .stock-in { background: rgba(16,185,129,0.1); color: var(--emerald-400); border: 1px solid rgba(16,185,129,0.2); }
-  .stock-in .dot { background: var(--emerald-500); }
-  .stock-low { background: var(--amber-100); color: #92400E; border: 1px solid rgba(245,158,11,0.3); }
-  .stock-low .dot { background: var(--amber-500); }
-  .stock-out { background: var(--red-100); color: #991B1B; border: 1px solid rgba(239,68,68,0.3); }
-  .stock-out .dot { background: var(--red-500); }
-  .stock-unknown { background: rgba(107,127,163,0.1); color: var(--slate-400); border: 1px solid rgba(107,127,163,0.15); }
-
-  .qty-control { display: flex; align-items: center; gap: 4px; }
-  .qty-btn {
-    width: 20px; height: 20px;
-    background: var(--navy-700);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 4px;
-    color: var(--slate-300);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-    line-height: 1;
-    transition: var(--transition);
-    padding: 0;
-  }
-  .qty-btn:hover { background: var(--navy-600); color: var(--white); }
-  .qty-value { min-width: 36px; text-align: center; font-size: 11.5px; color: var(--white); font-weight: 500; font-family: var(--font-mono); }
-
-  .row-actions { display: flex; gap: 4px; }
-  .icon-btn {
-    width: 24px; height: 24px;
-    background: none;
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px;
-    transition: var(--transition);
-    color: var(--slate-400);
-  }
-  .icon-btn:hover { background: var(--navy-700); color: var(--white); border-color: rgba(255,255,255,0.12); }
-  .icon-btn.del:hover { background: rgba(239,68,68,0.1); color: var(--red-500); border-color: rgba(239,68,68,0.2); }
-
-  /* ===== RIGHT PANEL: INVENTORY ===== */
-  .aisle-view { display: flex; flex-direction: column; gap: 10px; }
-  .aisle-group {
-    background: var(--navy-800);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-  }
-  .aisle-header {
-    padding: 8px 14px;
-    background: var(--navy-900);
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
-  .aisle-name {
-    font-size: 10.5px; font-weight: 700; color: var(--slate-300);
-    letter-spacing: 0.06em; text-transform: uppercase;
-  }
-  .aisle-count {
-    font-size: 10px; color: var(--slate-400);
-    background: var(--navy-700);
-    padding: 1px 7px; border-radius: 20px;
-  }
-  .aisle-items { padding: 6px 0; }
-  .aisle-item {
-    padding: 7px 14px;
-    display: flex; align-items: center; gap: 8px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    font-size: 11.5px;
-    transition: var(--transition);
-  }
-  .aisle-item:last-child { border-bottom: none; }
-  .aisle-item:hover { background: rgba(255,255,255,0.025); }
-  .aisle-item-name { flex: 1; color: var(--slate-200); font-weight: 500; }
-  .aisle-item-qty { color: var(--slate-400); font-size: 10.5px; font-family: var(--font-mono); }
-
-  .store-selector-row {
-    display: flex; gap: 8px; align-items: center; flex-shrink: 0;
-    padding: 10px 14px;
-    background: var(--navy-900);
-    border-bottom: 1px solid var(--border);
-  }
-  .store-selector-row .field-input { flex: 1; background: var(--navy-800); }
-
-  /* ===== SUMMARY BAR ===== */
-  .summary-bar {
-    grid-column: 1 / -1;
-    background: var(--navy-950);
-    border-top: 1px solid var(--border);
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    gap: 0;
-    flex-shrink: 0;
-  }
-  .summary-metrics { display: flex; gap: 0; flex: 1; }
-  .metric {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 0 20px;
-    border-right: 1px solid var(--border);
-  }
-  .metric:first-child { padding-left: 0; }
-  .metric-value {
-    font-size: 18px;
-    font-weight: 700;
-    font-family: var(--font-mono);
-    color: var(--white);
-    letter-spacing: -0.02em;
-  }
-  .metric-value.green { color: var(--emerald-400); }
-  .metric-value.red { color: #F87171; }
-  .metric-value.amber { color: var(--amber-500); }
-  .metric-label {
-    font-size: 9.5px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--slate-400);
-    margin-top: 1px;
-  }
-  .export-actions { display: flex; gap: 6px; align-items: center; margin-left: auto; }
-
-  /* ===== TOAST ===== */
-  .toast-container {
-    position: fixed;
-    bottom: max(60px, calc(20px + env(safe-area-inset-bottom)));
-    right: max(20px, env(safe-area-inset-right));
-    display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
-    z-index: 9999;
-    max-width: calc(100vw - 40px);
-    pointer-events: none;
-  }
-  .toast { pointer-events: auto; }
-  .toast {
-    padding: 10px 16px;
-    border-radius: var(--radius);
-    font-size: 12px;
-    font-weight: 500;
-    box-shadow: var(--shadow-lg);
-    animation: toast-in 0.25s ease;
-    max-width: 300px;
-    display: flex; align-items: center; gap: 8px;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  .toast.info { background: var(--navy-700); color: var(--white); }
-  .toast.success { background: rgba(5,150,105,0.95); color: #fff; }
-  .toast.warning { background: rgba(217,119,6,0.95); color: #fff; }
-  .toast.error { background: rgba(220,38,38,0.95); color: #fff; }
-  @keyframes toast-in {
-    from { opacity: 0; transform: translateX(16px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  /* ===== MODAL ===== */
-  .modal-backdrop {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(4px);
-    z-index: 200;
-    display: none; align-items: center; justify-content: center;
-  }
-  .modal-backdrop.open { display: flex; }
-  .modal {
-    background: var(--navy-800);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: var(--radius-lg);
-    padding: 24px;
-    max-width: 440px;
-    width: 90%;
-    box-shadow: var(--shadow-lg);
-  }
-  .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-  .modal-sub { font-size: 12px; color: var(--slate-400); margin-bottom: 18px; }
-  .modal-body { font-size: 12.5px; line-height: 1.7; color: var(--slate-200); margin-bottom: 18px; }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
-
-  /* ===== MISC ===== */
-  .divider { height: 1px; background: var(--border); margin: 4px 0; }
-  .empty-state {
-    text-align: center; padding: 30px 20px;
-    color: var(--slate-400); font-size: 12px;
-  }
-  .empty-state .icon { font-size: 28px; margin-bottom: 8px; opacity: 0.4; }
-  .note { font-size: 10.5px; color: var(--slate-400); line-height: 1.5; }
-
-  .opt-score-ring {
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 800;
-    font-family: var(--font-mono);
-  }
-
-  @media (max-width: 900px) {
-    .app-body { grid-template-columns: 1fr; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-    .panel { max-height: 400px; }
-    .summary-bar { flex-direction: column; gap: 10px; align-items: stretch; }
-    .settings-drawer { width: 100%; }
-  }
-
-  /* ===== PHONE / IPHONE OPTIMIZATIONS ===== */
-  @media (max-width: 600px) {
-    body { font-size: 14px; }
-
-    /* Prevent iOS Safari auto-zoom-on-focus by keeping inputs >=16px */
-    .field-input { font-size: 16px; padding: 9px 10px; }
-
-    .app-header { height: auto; min-height: calc(52px + env(safe-area-inset-top)); padding-top: calc(10px + env(safe-area-inset-top)); padding-bottom: 10px; flex-wrap: wrap; }
-    .header-title { font-size: 12px; }
-    .header-sub { display: none; }
-    .header-right { gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-    .btn-header { padding: 8px 10px; font-size: 11px; }
-    .btn-header-label-full { display: none; }
-    .btn-header-label-short { display: inline; }
-    .pill-badge { display: none; }
-
-    .panel { max-height: none; }
-    .panel-header { padding: 12px 14px; }
-    .panel-body { padding: 12px; }
-
-    /* Comfortable 44px+ touch targets on mobile */
-    .btn-sm, .btn-header, .drawer-close, .item-check { min-height: 38px; }
-    .btn-consult { min-height: 46px; }
-    .list-table tbody td, .list-table thead th { padding: 11px 10px; }
-
-    .quick-add-row { gap: 8px; }
-    .quick-add-row .field-input { min-width: 0; }
-    #qaName { flex: 1 1 100%; }
-    #qaQty { flex: 1 1 70px; }
-    #qaCategory { flex: 2 1 140px; }
-
-    .summary-metrics { flex-wrap: wrap; row-gap: 10px; justify-content: space-between; }
-    .metric { padding: 0 10px; border-right: none; }
-    .export-actions { flex-wrap: wrap; margin-left: 0; width: 100%; }
-    .export-actions .btn-sm { flex: 1; justify-content: center; }
-
-    .settings-drawer { padding-bottom: env(safe-area-inset-bottom); }
-    .drawer-body { padding: 16px; }
-
-    .modal { padding: 18px; width: 92%; }
-
-    .toast { max-width: calc(100vw - 40px); }
-  }
-
-  @supports (padding: max(0px)) {
-    body { padding-bottom: env(safe-area-inset-bottom); }
-  }
-</style>
+    /* ══ CONFIG ══ */
+    .config-list { display: flex; flex-direction: column; gap: 5px; flex: 1; overflow: hidden; }
+    .config-row { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .config-key { font-family: var(--mono); font-size: 9px; color: var(--text-secondary); letter-spacing: 0.08em; text-transform: uppercase; }
+    .config-val { font-family: var(--mono); font-size: 9px; font-weight: 700; color: var(--text-primary); }
+    .config-val.ok   { color: var(--green); }
+    .config-val.warn { color: var(--amber); }
+    .config-val.info { color: var(--cyan);  }
+    .toggle-wrap { display: flex; align-items: center; gap: 6px; }
+    .toggle { width: 30px; height: 16px; border-radius: 8px; background: var(--border); border: 1px solid var(--border2); position: relative; cursor: pointer; transition: background 0.2s; }
+    .toggle.on { background: rgba(0,240,255,0.2); border-color: var(--cyan); }
+    .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 10px; height: 10px; border-radius: 50%; background: var(--text-secondary); transition: all 0.2s; }
+    .toggle.on::after { left: 16px; background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
+  </style>
 </head>
 <body>
+<div id="app">
 
-<!-- ===== HEADER ===== -->
-<header class="app-header">
-  <div class="header-left">
-    <div class="logo-mark">🌿</div>
-    <div>
-      <div class="header-title">Palantir AIP Culinary & Grocery Orchestrator</div>
-      <div class="header-sub">Real-Time Inventory · AI Chef Agent · Aisle Optimizer</div>
-    </div>
-  </div>
-  <div class="header-right">
-    <span id="apiStatusBadge" class="pill-badge offline"><span class="dot"></span>API Disconnected</span>
-    <button class="btn-header" id="settingsToggle" onclick="toggleSettingsDrawer()"><span class="btn-header-label-full">⚙️ API &amp; Store Integrations</span><span class="btn-header-label-short">⚙️ Settings</span></button>
-  </div>
-</header>
+  <div id="alert-banner">▸ STORE SYNCED — STOCK INTEL ONLINE</div>
 
-<!-- ===== SETTINGS DRAWER ===== -->
-<aside class="settings-drawer" id="settingsDrawer">
-  <div class="drawer-header">
-    <div>
-      <div class="drawer-title">API &amp; Store Integrations</div>
-      <div class="drawer-sub">Configure AI model and local store locations</div>
+  <!-- ══════════ HUD ══════════ -->
+  <div id="hud">
+    <div class="hud-top-row">
+      <span class="sys-label">▸ AIP GROCERY CONSOLE</span>
+      <span class="sys-id" id="sync-time">NODE-7F2A · --:--</span>
     </div>
-    <button class="drawer-close" onclick="toggleSettingsDrawer()">✕</button>
-  </div>
-  <div class="drawer-body">
-    <div>
-      <div class="drawer-section-label">Google Gemini Configuration</div>
-      <div class="field-group">
-        <label class="field-label">Gemini API Key</label>
-        <input type="password" class="field-input" id="geminiApiKey" placeholder="AIza…" oninput="checkApiKey()" />
+    <div class="hud-metrics">
+      <div class="metric-chip">
+        <div class="metric-dot green"></div>
+        <span class="metric-val">NET LIVE</span>
       </div>
-      <div class="field-group">
-        <label class="field-label">Model</label>
-        <select class="field-input" id="geminiModel">
-          <option value="gemini-3.5-flash" selected>gemini-3.5-flash (Default)</option>
-          <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
-          <option value="gemini-2.5-flash">gemini-2.5-flash (Legacy)</option>
-          <option value="gemini-2.5-pro">gemini-2.5-pro (Advanced)</option>
-        </select>
+      <div class="metric-chip">
+        <div class="metric-dot" id="store-dot" style="background:var(--red);box-shadow:0 0 5px var(--red)"></div>
+        <span class="metric-val" id="store-metric">NO STORE</span>
       </div>
-      <div class="api-status-row">
-        <span class="api-status-text">Status:</span>
-        <span id="drawerApiStatus" class="pill-badge offline"><span class="dot"></span>Disconnected</span>
+      <div class="metric-chip">
+        <div class="metric-dot cyan"></div>
+        <span class="metric-val" id="list-count-chip">LIST: 0</span>
       </div>
     </div>
-    <div>
-      <div class="drawer-section-label">Local Store Locations</div>
-      <div class="store-tags" id="storeTagsContainer"></div>
-      <div class="store-add-row">
-        <input type="text" class="field-input" id="storeInput" placeholder="e.g. Wegmans - Virginia Beach, VA" onkeydown="if(event.key==='Enter')addStore()" />
-        <button class="btn-sm btn-primary" onclick="addStore()">+ Add</button>
-      </div>
-      <p class="note" style="margin-top:10px">Stores populate the inventory tracker dropdown for per-location stock simulation.</p>
-    </div>
-    <div>
-      <div class="drawer-section-label">Palantir Foundry Ontology</div>
-      <p class="note">Export actions connect to your Foundry instance via the Object Action API. Configure your instance URL below.</p>
-      <div class="field-group" style="margin-top:10px">
-        <label class="field-label">Foundry Instance URL</label>
-        <input type="text" class="field-input" id="foundryUrl" placeholder="https://your-instance.palantirfoundry.com" />
-      </div>
-    </div>
-  </div>
-</aside>
-
-<!-- ===== MAIN BODY ===== -->
-<main class="app-body" id="appBody">
-
-  <!-- LEFT: AI CULINARY PANEL -->
-  <section class="panel">
-    <div class="panel-header">
-      <span class="panel-title">
-        <span class="icon icon-ai">🤖</span>
-        AI Culinary Expert
-      </span>
-      <span class="ai-mode-badge" id="aiModeBadge">Recipe Generator</span>
-    </div>
-    <div class="panel-body">
-      <div class="field-group">
-        <label class="field-label">Chef Consulting Mode</label>
-        <select class="field-input" id="consultMode" onchange="updateModeBadge()">
-          <option value="Recipe Generator">Recipe Generator</option>
-          <option value="Weekly Meal Planner">Weekly Meal Planner</option>
-          <option value="Ingredient Substitutor">Ingredient Substitutor</option>
-          <option value="Budget Optimizer">Budget Optimizer</option>
-        </select>
-      </div>
-      <div class="field-group">
-        <label class="field-label">Dietary Restrictions, Leftovers, or Meal Goals</label>
-        <textarea class="field-input" id="consultInput" rows="4" placeholder="e.g. Gluten-free, have leftover chicken and bell peppers, need a quick 30-min weeknight dinner for 4…" style="resize:vertical; min-height:90px;"></textarea>
-      </div>
-      <button class="btn-consult" id="consultBtn" onclick="handleConsult()">
-        <span>✦</span> Consult Culinary AI Agent
-      </button>
-      <div class="ai-output-area" id="aiOutputArea">
-        <div class="ai-output-placeholder" id="aiPlaceholder">
-          <div class="ai-icon">🍳</div>
-          <p>Your AI Chef Agent is ready. Select a mode and describe your culinary goals above to receive expert guidance.</p>
-        </div>
-        <div class="spinner" id="aiSpinner"></div>
-        <div class="ai-output-content" id="aiOutputContent" style="display:none"></div>
-      </div>
-      <button class="btn-sm btn-primary add-to-list-btn" id="addToListBtn" onclick="addAiItemsToList()" style="display:none">
-        ✚ Add Suggested Items to Shopping List
-      </button>
-    </div>
-  </section>
-
-  <!-- CENTER: SHOPPING LIST PANEL -->
-  <section class="panel">
-    <div class="panel-header">
-      <span class="panel-title">
-        <span class="icon icon-list">🛒</span>
-        Master Shopping List
-      </span>
-      <div style="display:flex;gap:6px">
-        <button class="btn-sm btn-secondary" onclick="clearCompleted()" title="Clear checked items">🗑 Clear Done</button>
-        <button class="btn-sm btn-secondary" onclick="sortByCategory()" title="Sort by category">⬆ Sort</button>
-      </div>
-    </div>
-    <div class="panel-body">
-      <!-- Quick Add -->
-      <div class="quick-add-bar">
-        <div style="font-size:10.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--slate-400);margin-bottom:4px">Quick Add Item</div>
-        <div class="quick-add-row">
-          <input type="text" class="field-input" id="qaName" placeholder="Item name…" style="flex:2;min-width:100px" onkeydown="if(event.key==='Enter')quickAddItem()" />
-          <input type="text" class="field-input" id="qaQty" placeholder="Qty" style="width:54px" />
-          <select class="field-input" id="qaCategory" style="flex:1.2;min-width:100px">
-            <option value="Produce">🥦 Produce</option>
-            <option value="Meat & Seafood">🥩 Meat & Seafood</option>
-            <option value="Dairy">🧀 Dairy</option>
-            <option value="Pantry">🫙 Pantry</option>
-            <option value="Bakery">🍞 Bakery</option>
-            <option value="Frozen">❄️ Frozen</option>
-            <option value="Beverages">🥤 Beverages</option>
-          </select>
-          <button class="btn-sm btn-primary" onclick="quickAddItem()">+ Add</button>
-        </div>
-      </div>
-      <!-- Table -->
-      <div class="list-table-wrap">
-        <table class="list-table" id="shoppingListTable">
-          <thead>
-            <tr>
-              <th style="width:30px"></th>
-              <th>Item</th>
-              <th>Category</th>
-              <th>Qty</th>
-              <th>Stock</th>
-              <th style="width:70px"></th>
-            </tr>
-          </thead>
-          <tbody id="shoppingListBody"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- RIGHT: INVENTORY TRACKER -->
-  <section class="panel">
-    <div class="panel-header">
-      <span class="panel-title">
-        <span class="icon icon-store">🏪</span>
-        Store Inventory
-      </span>
-      <button class="btn-sm btn-secondary" onclick="refreshInventory()" title="Refresh stock">↻ Refresh</button>
-    </div>
-    <div class="store-selector-row">
-      <select class="field-input" id="storeSelector" onchange="onStoreChange()">
-        <option value="">— Select a Store —</option>
+    <div class="hud-store-row">
+      <select class="store-select" id="store-select" onchange="onStoreChange()">
+        <option value="">— SELECT STORE —</option>
+        <option value="whole_foods">Whole Foods · Downtown</option>
+        <option value="trader_joes">Trader Joe's · Midtown</option>
+        <option value="kroger">Kroger · Eastside</option>
+        <option value="costco">Costco · Warehouse District</option>
+        <option value="sprouts">Sprouts · Westside</option>
       </select>
-    </div>
-    <div class="panel-body" id="inventoryPanel">
-      <div class="empty-state">
-        <div class="icon">🏪</div>
-        <div>Add stores in Settings, then select one to view live inventory &amp; aisle mapping.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SUMMARY BAR -->
-  <div class="summary-bar">
-    <div class="summary-metrics">
-      <div class="metric">
-        <span class="metric-value" id="metTotalItems">0</span>
-        <span class="metric-label">Total Items</span>
-      </div>
-      <div class="metric">
-        <span class="metric-value green" id="metEstCost">$0.00</span>
-        <span class="metric-label">Est. Cost</span>
-      </div>
-      <div class="metric">
-        <span class="metric-value red" id="metMissing">0</span>
-        <span class="metric-label">Out of Stock</span>
-      </div>
-      <div class="metric">
-        <span class="metric-value amber" id="metLow">0</span>
-        <span class="metric-label">Low Stock</span>
-      </div>
-      <div class="metric">
-        <span class="metric-value green" id="metScore">—</span>
-        <span class="metric-label">Opt. Score</span>
-      </div>
-    </div>
-    <div class="export-actions">
-      <button class="btn-sm btn-secondary" onclick="exportFoundry()">⬆ Export to Foundry</button>
-      <button class="btn-sm btn-secondary" onclick="copyRawList()">📋 Copy Raw List</button>
-      <button class="btn-sm btn-primary" onclick="printView()">🖨 Print View</button>
+      <button id="sync-btn" onclick="syncData()">
+        <span>⟳</span>
+        <span id="sync-label">SYNC</span>
+      </button>
     </div>
   </div>
-</main>
 
-<!-- ===== TOAST CONTAINER ===== -->
-<div class="toast-container" id="toastContainer"></div>
+  <!-- ══════════ BUBBLES ══════════ -->
+  <div id="bubble-zone">
+    <div class="bubble active" id="tab-stock" onclick="switchTab('stock')">
+      <div class="bubble-ring">
+        <div class="bubble-icon">📡</div>
+        <div class="bubble-badge" id="badge-stock"></div>
+      </div>
+      <div class="bubble-label">Stock<br>Intel</div>
+    </div>
+    <div class="bubble" id="tab-shop" onclick="switchTab('shop')">
+      <div class="bubble-ring">
+        <div class="bubble-icon">📋</div>
+        <div class="bubble-badge" id="badge-shop"></div>
+      </div>
+      <div class="bubble-label">Shopping<br>List</div>
+    </div>
+    <div class="bubble" id="tab-meal" onclick="switchTab('meal')">
+      <div class="bubble-ring">
+        <div class="bubble-icon">🍽</div>
+        <div class="bubble-badge" id="badge-meal"></div>
+      </div>
+      <div class="bubble-label">Meal<br>Prep</div>
+    </div>
+    <div class="bubble" id="tab-config" onclick="switchTab('config')">
+      <div class="bubble-ring">
+        <div class="bubble-icon">⚙️</div>
+        <div class="bubble-badge" id="badge-config"></div>
+      </div>
+      <div class="bubble-label">System<br>Config</div>
+    </div>
+  </div>
 
-<!-- ===== MODAL ===== -->
-<div class="modal-backdrop" id="modalBackdrop" onclick="closeModal(event)">
-  <div class="modal" id="modalEl">
-    <div class="modal-title" id="modalTitle"></div>
-    <div class="modal-sub" id="modalSub"></div>
-    <div class="modal-body" id="modalBody"></div>
-    <div class="modal-actions">
-      <button class="btn-sm btn-secondary" onclick="closeModal()">Close</button>
+  <!-- ══════════ OP ZONE ══════════ -->
+  <div id="op-zone">
+
+    <!-- STOCK INTEL -->
+    <div class="view-panel active" id="panel-stock">
+      <div class="panel-header">
+        <span class="panel-title">▸ STOCK INTEL</span>
+        <span class="panel-meta" id="stock-timestamp">NO STORE SELECTED</span>
+      </div>
+      <div id="stock-lock" class="show">
+        <div class="lock-icon">🔒</div>
+        <div class="lock-msg">NO STORE SELECTED<br>STOCK DATA UNAVAILABLE</div>
+        <div class="lock-hint">Select a store above and tap SYNC to load inventory</div>
+      </div>
+      <div class="stock-grid" id="stock-grid" style="display:none"></div>
+    </div>
+
+    <!-- SHOPPING LIST -->
+    <div class="view-panel" id="panel-shop">
+      <div class="panel-header">
+        <span class="panel-title">▸ SHOPPING LIST</span>
+        <span class="panel-meta"><span id="cart-tally">0</span> ITEMS</span>
+      </div>
+      <div id="list-empty" class="show">
+        <div class="empty-icon">📋</div>
+        <div class="empty-msg">LIST IS EMPTY<br>INJECT MEALS TO POPULATE</div>
+      </div>
+      <div class="shop-grid" id="shop-grid" style="display:none"></div>
+    </div>
+
+    <!-- MEAL PREP -->
+    <div class="view-panel" id="panel-meal">
+      <div class="panel-header">
+        <span class="panel-title">▸ MEAL PREP</span>
+        <span class="panel-meta" id="meal-meta">0 ACTIVE</span>
+      </div>
+      <div class="meal-toolbar">
+        <button class="meal-tool-btn cyan-btn" onclick="openMealLibrary()">⊞ MEAL LIBRARY</button>
+        <button class="meal-tool-btn purple-btn" onclick="open5DayPrep()">◈ 5-DAY PREP</button>
+      </div>
+      <div class="meal-list" id="meal-list">
+        <div style="display:flex;flex:1;align-items:center;justify-content:center;">
+          <div style="text-align:center">
+            <div style="font-size:24px;opacity:0.2">🍽</div>
+            <div style="font-family:var(--mono);font-size:9px;color:var(--text-muted);margin-top:6px;letter-spacing:0.1em">NO MEALS ACTIVE<br>OPEN MEAL LIBRARY</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SYSTEM CONFIG -->
+    <div class="view-panel" id="panel-config">
+      <div class="panel-header">
+        <span class="panel-title">▸ SYSTEM CONFIG</span>
+        <span class="panel-meta">RUNTIME PARAMS</span>
+      </div>
+      <div class="config-list" id="config-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ MEAL LIBRARY MODAL ══════════ -->
+<div class="modal-overlay" id="modal-library">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">⊞ MEAL LIBRARY</span>
+      <button class="modal-close" onclick="closeMealLibrary()">✕</button>
+    </div>
+    <div class="modal-body" id="library-body"></div>
+    <div class="modal-footer">
+      <button class="add-list-btn" onclick="confirmLibrarySelection()">▸ ACTIVATE SELECTED MEALS</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 5-DAY PREP MODAL ══════════ -->
+<div class="modal-overlay" id="modal-5day">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">◈ 5-DAY MEAL PREP</span>
+      <button class="modal-close" onclick="close5Day()">✕</button>
+    </div>
+    <div class="modal-body" id="fiveday-body"></div>
+    <div class="modal-footer">
+      <button class="add-list-btn" onclick="add5DayToList()">▸ ADD ALL TO SHOPPING LIST</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ================================================================
-   DATA MODEL
-   ================================================================ */
-
-let shoppingList = [
-  { id: 1, name: 'Organic Ribeye Steak', category: 'Meat & Seafood', qty: '2 lbs', completed: false, stock: 'unknown' },
-  { id: 2, name: 'Heirloom Tomatoes', category: 'Produce', qty: '4 units', completed: false, stock: 'unknown' },
-  { id: 3, name: 'Aged Parmesan Block', category: 'Dairy', qty: '8 oz', completed: false, stock: 'unknown' },
-  { id: 4, name: 'Sourdough Baguette', category: 'Bakery', qty: '1 loaf', completed: false, stock: 'unknown' },
-  { id: 5, name: 'Arborio Rice', category: 'Pantry', qty: '2 lbs', completed: false, stock: 'unknown' },
-  { id: 6, name: 'Baby Spinach', category: 'Produce', qty: '5 oz bag', completed: true, stock: 'unknown' },
-  { id: 7, name: 'Heavy Whipping Cream', category: 'Dairy', qty: '1 pint', completed: false, stock: 'unknown' },
-  { id: 8, name: 'San Marzano Tomatoes (Canned)', category: 'Pantry', qty: '2 cans', completed: false, stock: 'unknown' },
-  { id: 9, name: 'Wild-Caught Salmon Fillet', category: 'Meat & Seafood', qty: '1.5 lbs', completed: false, stock: 'unknown' },
-  { id: 10, name: 'Sparkling Water (Case)', category: 'Beverages', qty: '24-pack', completed: false, stock: 'unknown' },
+/* ══════════════════════════════════════
+   MASTER MEAL DATABASE
+══════════════════════════════════════ */
+const MEAL_DB = [
+  {
+    id: 'grain_bowl', icon: '🥗', name: 'Power Grain Bowl', kcal: 520,
+    macros: { P: 38, C: 54, F: 12 },
+    ingredients: [
+      { id: 'chicken', qty: '150g' },
+      { id: 'rice',    qty: '80g dry' },
+      { id: 'spinach', qty: '60g' },
+      { id: 'avocado', qty: '½ fruit' },
+    ]
+  },
+  {
+    id: 'omelette', icon: '🍳', name: 'Protein Omelette', kcal: 340,
+    macros: { P: 28, C: 6, F: 22 },
+    ingredients: [
+      { id: 'eggs',    qty: '3 large' },
+      { id: 'spinach', qty: '40g' },
+      { id: 'cheese',  qty: '30g' },
+    ]
+  },
+  {
+    id: 'smoothie', icon: '🥤', name: 'Green Recovery Shake', kcal: 290,
+    macros: { P: 12, C: 38, F: 8 },
+    ingredients: [
+      { id: 'spinach', qty: '50g' },
+      { id: 'avocado', qty: '¼ fruit' },
+      { id: 'milk',    qty: '300ml' },
+      { id: 'banana',  qty: '1 medium' },
+    ]
+  },
+  {
+    id: 'chicken_rice', icon: '🍱', name: 'Meal Prep Classic', kcal: 480,
+    macros: { P: 42, C: 50, F: 9 },
+    ingredients: [
+      { id: 'chicken', qty: '180g' },
+      { id: 'rice',    qty: '90g dry' },
+      { id: 'broccoli',qty: '100g' },
+    ]
+  },
+  {
+    id: 'avocado_toast', icon: '🥑', name: 'Avocado Egg Toast', kcal: 380,
+    macros: { P: 18, C: 32, F: 20 },
+    ingredients: [
+      { id: 'avocado', qty: '1 fruit' },
+      { id: 'eggs',    qty: '2 large' },
+      { id: 'bread',   qty: '2 slices' },
+    ]
+  },
+  {
+    id: 'spinach_salad', icon: '🥬', name: 'Power Spinach Salad', kcal: 260,
+    macros: { P: 14, C: 18, F: 14 },
+    ingredients: [
+      { id: 'spinach', qty: '120g' },
+      { id: 'avocado', qty: '½ fruit' },
+      { id: 'eggs',    qty: '2 hard boiled' },
+    ]
+  },
 ];
-let nextId = 11;
 
-let stores = [
-  'Wegmans - Virginia Beach, VA',
-  'Harris Teeter - Hilltop, Virginia Beach',
-  'Whole Foods - Town Center, Virginia Beach',
+/* ══════════════════════════════════════
+   GROCERY MASTER INDEX (for aisle + name lookup)
+══════════════════════════════════════ */
+const GROCERY_INDEX = {
+  milk:     { name: 'Whole Milk',      aisle: 'A-04' },
+  eggs:     { name: 'Free Range Eggs', aisle: 'A-04' },
+  chicken:  { name: 'Chicken Breast',  aisle: 'B-02' },
+  spinach:  { name: 'Baby Spinach',    aisle: 'C-01' },
+  avocado:  { name: 'Avocado',         aisle: 'C-03' },
+  rice:     { name: 'Brown Rice',      aisle: 'D-06' },
+  banana:   { name: 'Banana',          aisle: 'C-02' },
+  cheese:   { name: 'Cheddar Cheese',  aisle: 'A-05' },
+  broccoli: { name: 'Broccoli',        aisle: 'C-01' },
+  bread:    { name: 'Whole Grain Bread',aisle: 'D-02' },
+};
+
+/* Stock data — only populated after sync */
+let STOCK_DATA = {};
+
+const STOCK_SCHEMA_TEMPLATE = [
+  { id: 'milk',    stock_status: 'ok'    },
+  { id: 'eggs',    stock_status: 'ok'    },
+  { id: 'chicken', stock_status: 'low'   },
+  { id: 'spinach', stock_status: 'ok'    },
+  { id: 'avocado', stock_status: 'low'   },
+  { id: 'rice',    stock_status: 'empty' },
+  { id: 'banana',  stock_status: 'ok'    },
+  { id: 'cheese',  stock_status: 'ok'    },
+  { id: 'broccoli',stock_status: 'ok'    },
+  { id: 'bread',   stock_status: 'low'   },
 ];
-let selectedStore = '';
 
-const MOCK_PRICES = {
-  'Meat & Seafood': 14.99,
-  'Produce': 3.49,
-  'Dairy': 5.99,
-  'Pantry': 4.29,
-  'Bakery': 6.49,
-  'Frozen': 7.99,
-  'Beverages': 9.99,
-};
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let storeSelected = false;
+let activeMealIds = [];   // IDs of meals user has activated
+let shoppingList  = {};   // { ingredientId: { qty, checked } }
+let libSelection  = [];   // temp selection in library modal
 
-/* Stock simulation — each store gets slightly different inventory */
-const STORE_INVENTORY_SEEDS = {
-  'Wegmans - Virginia Beach, VA':              { inStockRate: 0.92, lowItems: ['Aged Parmesan Block'], outItems: [] },
-  'Harris Teeter - Hilltop, Virginia Beach':   { inStockRate: 0.85, lowItems: ['Arborio Rice', 'Organic Ribeye Steak'], outItems: ['Wild-Caught Salmon Fillet'] },
-  'Whole Foods - Town Center, Virginia Beach': { inStockRate: 0.80, lowItems: ['Heavy Whipping Cream', 'Sourdough Baguette'], outItems: ['Sparkling Water (Case)'] },
-};
+const CONFIG_PARAMS = [
+  { key: 'SYNC INTERVAL',  val: '15 MIN',  cls: 'info' },
+  { key: 'STORE NETWORK',  val: 'ONLINE',  cls: 'ok', toggle: true, on: true  },
+  { key: 'PUSH ALERTS',    val: '',        cls: '', toggle: true, on: true  },
+  { key: 'LOW STOCK WARN', val: '',        cls: '', toggle: true, on: true  },
+  { key: 'AUTO-INJECT',    val: '',        cls: '', toggle: true, on: false },
+  { key: 'DATA CACHE',     val: '4.2 MB',  cls: 'warn' },
+  { key: 'SCHEMA VER',     val: 'v2.6.1',  cls: 'info' },
+  { key: 'LAST SYNC',      val: 'PENDING', cls: 'warn', id: 'cfg-sync' },
+];
 
-const AISLE_MAP = {
-  'Produce':        'Aisle 1 — Fresh Produce',
-  'Meat & Seafood': 'Aisle 2 — Meat & Seafood',
-  'Dairy':          'Aisle 3 — Dairy & Eggs',
-  'Pantry':         'Aisle 4 — Pantry & Dry Goods',
-  'Bakery':         'Aisle 5 — Bakery',
-  'Frozen':         'Aisle 6 — Frozen Foods',
-  'Beverages':      'Aisle 7 — Beverages',
-};
-
-const AISLE_ORDER = ['Aisle 1 — Fresh Produce','Aisle 2 — Meat & Seafood','Aisle 3 — Dairy & Eggs','Aisle 4 — Pantry & Dry Goods','Aisle 5 — Bakery','Aisle 6 — Frozen Foods','Aisle 7 — Beverages'];
-
-// Track parsed AI items for "Add to List" button
-let pendingAiItems = [];
-
-/* ================================================================
-   SETTINGS / DRAWER
-   ================================================================ */
-function toggleSettingsDrawer() {
-  const d = document.getElementById('settingsDrawer');
-  const btn = document.getElementById('settingsToggle');
-  d.classList.toggle('open');
-  btn.classList.toggle('active');
-}
-
-function checkApiKey() {
-  const key = document.getElementById('geminiApiKey').value.trim();
-  const badge = document.getElementById('apiStatusBadge');
-  const drawerBadge = document.getElementById('drawerApiStatus');
-  if (key.length > 10) {
-    badge.className = 'pill-badge online';
-    badge.innerHTML = '<span class="dot"></span>API Connected';
-    drawerBadge.className = 'pill-badge online';
-    drawerBadge.innerHTML = '<span class="dot"></span>Connected';
-  } else {
-    badge.className = 'pill-badge offline';
-    badge.innerHTML = '<span class="dot"></span>API Disconnected';
-    drawerBadge.className = 'pill-badge offline';
-    drawerBadge.innerHTML = '<span class="dot"></span>Disconnected';
-  }
-}
-
-function addStore() {
-  const input = document.getElementById('storeInput');
-  const val = input.value.trim();
-  if (!val) return;
-  if (stores.includes(val)) { showToast('Store already added', 'warning'); return; }
-  stores.push(val);
-  input.value = '';
-  renderStoreTags();
-  populateStoreSelector();
-  showToast(`Store added: ${val}`, 'success');
-}
-
-function removeStore(name) {
-  stores = stores.filter(s => s !== name);
-  if (selectedStore === name) {
-    selectedStore = '';
-    document.getElementById('storeSelector').value = '';
-    renderInventoryPanel();
-  }
-  renderStoreTags();
-  populateStoreSelector();
-}
-
-function renderStoreTags() {
-  const c = document.getElementById('storeTagsContainer');
-  c.innerHTML = stores.map(s => `
-    <span class="store-tag">
-      🏪 ${s}
-      <button class="store-tag-remove" onclick="removeStore('${s.replace(/'/g,"\\'")}')">✕</button>
-    </span>
-  `).join('');
-}
-
-function populateStoreSelector() {
-  const sel = document.getElementById('storeSelector');
-  sel.innerHTML = '<option value="">— Select a Store —</option>' +
-    stores.map(s => `<option value="${s}"${s===selectedStore?' selected':''}>${s}</option>`).join('');
-}
-
+/* ══════════════════════════════════════
+   STORE CHANGE
+══════════════════════════════════════ */
 function onStoreChange() {
-  selectedStore = document.getElementById('storeSelector').value;
-  if (selectedStore) {
-    simulateInventory();
-    renderShoppingList();
-    renderInventoryPanel();
+  const sel = document.getElementById('store-select').value;
+  if (!sel) {
+    storeSelected = false;
+    STOCK_DATA = {};
+    updateStoreMetric(false);
+    renderStock();
+    return;
+  }
+  // Don't auto-sync — user must press SYNC to load inventory
+  storeSelected = false; // treat as dirty until synced
+  updateStoreMetric(false, true); // "pending"
+  renderStock();
+}
+
+function updateStoreMetric(online, pending) {
+  const dot = document.getElementById('store-dot');
+  const txt = document.getElementById('store-metric');
+  const sel = document.getElementById('store-select').value;
+  if (!sel) {
+    dot.style.background = 'var(--red)'; dot.style.boxShadow = '0 0 5px var(--red)';
+    txt.textContent = 'NO STORE';
+  } else if (pending) {
+    dot.style.background = 'var(--amber)'; dot.style.boxShadow = '0 0 5px var(--amber)';
+    txt.textContent = 'PENDING';
   } else {
-    renderInventoryPanel();
+    dot.style.background = 'var(--green)'; dot.style.boxShadow = '0 0 5px var(--green)';
+    txt.textContent = 'SYNCED';
   }
 }
 
-/* ================================================================
-   INVENTORY ENGINE
-   ================================================================ */
-function getStockStatus(itemName) {
-  if (!selectedStore) return 'unknown';
-  const seed = STORE_INVENTORY_SEEDS[selectedStore] || { inStockRate: 0.85, lowItems: [], outItems: [] };
-  if (seed.outItems.includes(itemName)) return 'out';
-  if (seed.lowItems.includes(itemName)) return 'low';
-  return 'in';
+/* ══════════════════════════════════════
+   TAB SWITCHER
+══════════════════════════════════════ */
+function switchTab(tab) {
+  document.querySelectorAll('.bubble').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
 }
 
-function simulateInventory() {
-  shoppingList = shoppingList.map(item => ({
-    ...item,
-    stock: getStockStatus(item.name)
-  }));
-  updateSummary();
-}
+/* ══════════════════════════════════════
+   SYNC
+══════════════════════════════════════ */
+function syncData() {
+  const sel = document.getElementById('store-select').value;
+  if (!sel) {
+    flashBanner('▸ SELECT A STORE FIRST', 'var(--amber)', 'var(--amber)');
+    return;
+  }
 
-function refreshInventory() {
-  if (!selectedStore) { showToast('Select a store first', 'warning'); return; }
-  showToast('Refreshing inventory data…', 'info');
+  const btn = document.getElementById('sync-btn');
+  const lbl = document.getElementById('sync-label');
+  btn.classList.add('syncing'); lbl.textContent = '…';
+
   setTimeout(() => {
-    simulateInventory();
-    renderShoppingList();
-    renderInventoryPanel();
-    showToast('Inventory refreshed ✓', 'success');
-  }, 900);
+    // Populate stock data
+    STOCK_DATA = {};
+    STOCK_SCHEMA_TEMPLATE.forEach(t => {
+      const roll = Math.random();
+      let s = t.stock_status;
+      if (s === 'empty') s = roll < 0.3 ? 'low' : 'empty';
+      else if (s === 'low') s = roll < 0.4 ? 'ok' : 'low';
+      STOCK_DATA[t.id] = s;
+    });
+
+    storeSelected = true;
+    const now = new Date();
+    const ts = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+    document.getElementById('sync-time').textContent = 'NODE-7F2A · ' + ts;
+
+    const stamp = document.getElementById('stock-timestamp');
+    if (stamp) stamp.textContent = 'SYNCED ' + ts;
+    const cfgS = document.getElementById('cfg-sync');
+    if (cfgS) { cfgS.textContent = ts; cfgS.className = 'config-val ok'; }
+
+    updateStoreMetric(true, false);
+    renderAll();
+
+    btn.classList.remove('syncing'); btn.classList.add('synced'); lbl.textContent = '✓ OK';
+    flashBanner('▸ STORE SYNCED — STOCK INTEL ONLINE', 'var(--green)', 'var(--green)');
+    setTimeout(() => { btn.classList.remove('synced'); lbl.textContent = 'SYNC'; }, 1800);
+  }, 500);
 }
 
-/* ================================================================
-   SHOPPING LIST RENDERING
-   ================================================================ */
-function getCatClass(cat) {
-  const map = {
-    'Produce':'cat-produce','Meat & Seafood':'cat-meat','Dairy':'cat-dairy',
-    'Pantry':'cat-pantry','Bakery':'cat-bakery','Frozen':'cat-frozen','Beverages':'cat-beverages'
-  };
-  return map[cat] || 'cat-pantry';
+function flashBanner(msg, color, borderColor) {
+  const b = document.getElementById('alert-banner');
+  b.textContent = msg;
+  b.style.color = color;
+  b.style.borderBottomColor = borderColor;
+  b.classList.add('show');
+  setTimeout(() => b.classList.remove('show'), 1800);
 }
 
-function getStockBadgeHtml(stock) {
-  if (stock === 'in') return `<span class="stock-badge stock-in"><span class="dot"></span>In Stock</span>`;
-  if (stock === 'low') return `<span class="stock-badge stock-low"><span class="dot"></span>Low Stock</span>`;
-  if (stock === 'out') return `<span class="stock-badge stock-out"><span class="dot"></span>Out of Stock</span>`;
-  return `<span class="stock-badge stock-unknown"><span class="dot"></span>—</span>`;
-}
+/* ══════════════════════════════════════
+   RENDER: STOCK
+══════════════════════════════════════ */
+function renderStock() {
+  const lock = document.getElementById('stock-lock');
+  const grid = document.getElementById('stock-grid');
+  const stamp = document.getElementById('stock-timestamp');
 
-function renderShoppingList() {
-  const tbody = document.getElementById('shoppingListBody');
-  if (shoppingList.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">🛒</div><div>Your shopping list is empty. Add items or consult the AI Chef Agent!</div></div></td></tr>`;
-    updateSummary();
+  if (!storeSelected) {
+    lock.classList.add('show');
+    grid.style.display = 'none';
+    stamp.textContent = 'NO STORE SELECTED';
+    document.getElementById('badge-stock').classList.remove('visible');
     return;
   }
-  tbody.innerHTML = shoppingList.map(item => `
-    <tr id="row-${item.id}" class="${item.completed ? 'completed' : ''}">
-      <td><input type="checkbox" class="item-check" ${item.completed ? 'checked' : ''} onchange="toggleItem(${item.id})" /></td>
-      <td>
-        <div class="item-name">${item.name}</div>
-      </td>
-      <td><span class="cat-badge ${getCatClass(item.category)}">${item.category}</span></td>
-      <td>
-        <div class="qty-control">
-          <button class="qty-btn" onclick="adjustQty(${item.id},-1)">−</button>
-          <span class="qty-value">${item.qty}</span>
-          <button class="qty-btn" onclick="adjustQty(${item.id},1)">+</button>
-        </div>
-      </td>
-      <td>${getStockBadgeHtml(item.stock)}</td>
-      <td>
-        <div class="row-actions">
-          <button class="icon-btn" title="Check local availability" onclick="checkAvailability(${item.id})">🔍</button>
-          <button class="icon-btn del" title="Remove item" onclick="deleteItem(${item.id})">🗑</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-  updateSummary();
+
+  lock.classList.remove('show');
+  grid.style.display = 'grid';
+
+  grid.innerHTML = Object.entries(GROCERY_INDEX).map(([id, info]) => {
+    const s = STOCK_DATA[id] || 'ok';
+    const label = s === 'ok' ? 'IN STOCK' : s === 'low' ? 'LOW STOCK' : 'OUT OF STOCK';
+    return `<div class="stock-row ${s}">
+      <div class="stock-name">${info.name}</div>
+      <div class="stock-aisle">AISLE ${info.aisle}</div>
+      <div class="stock-status-txt">● ${label}</div>
+    </div>`;
+  }).join('');
+
+  const issues = Object.values(STOCK_DATA).filter(s => s !== 'ok').length;
+  const badge = document.getElementById('badge-stock');
+  if (issues > 0) { badge.textContent = issues; badge.classList.add('visible'); }
+  else badge.classList.remove('visible');
 }
 
-function toggleItem(id) {
-  const item = shoppingList.find(i => i.id === id);
-  if (item) item.completed = !item.completed;
-  renderShoppingList();
-  if (selectedStore) renderInventoryPanel();
-}
-
-function deleteItem(id) {
-  shoppingList = shoppingList.filter(i => i.id !== id);
-  renderShoppingList();
-  if (selectedStore) renderInventoryPanel();
-  showToast('Item removed', 'info');
-}
-
-function adjustQty(id, dir) {
-  const item = shoppingList.find(i => i.id === id);
-  if (!item) return;
-  // Try to parse leading number
-  const match = item.qty.match(/^([\d.]+)(.*)/);
-  if (match) {
-    let num = parseFloat(match[1]) + dir;
-    if (num < 0) num = 0;
-    item.qty = (Number.isInteger(num) ? num : num.toFixed(1)) + match[2];
-  } else {
-    item.qty = dir > 0 ? '2 units' : '0';
-  }
-  if (item.qty.startsWith('0') && !item.qty.includes('.')) {
-    if (confirm('Set quantity to 0 — remove this item?')) { deleteItem(id); return; }
-    item.qty = '1 unit';
-  }
-  renderShoppingList();
-}
-
-function sortByCategory() {
-  shoppingList.sort((a, b) => a.category.localeCompare(b.category));
-  renderShoppingList();
-  showToast('Sorted by category', 'info');
-}
-
-function clearCompleted() {
-  const count = shoppingList.filter(i => i.completed).length;
-  if (count === 0) { showToast('No completed items to clear', 'info'); return; }
-  shoppingList = shoppingList.filter(i => !i.completed);
-  renderShoppingList();
-  if (selectedStore) renderInventoryPanel();
-  showToast(`Cleared ${count} completed item${count !== 1 ? 's' : ''}`, 'success');
-}
-
-function quickAddItem() {
-  const name = document.getElementById('qaName').value.trim();
-  const qty  = document.getElementById('qaQty').value.trim() || '1 unit';
-  const cat  = document.getElementById('qaCategory').value;
-  if (!name) { showToast('Enter an item name', 'warning'); return; }
-  shoppingList.push({ id: nextId++, name, category: cat, qty, completed: false, stock: selectedStore ? getStockStatus(name) : 'unknown' });
-  document.getElementById('qaName').value = '';
-  document.getElementById('qaQty').value = '';
-  renderShoppingList();
-  if (selectedStore) renderInventoryPanel();
-  showToast(`Added: ${name}`, 'success');
-}
-
-function checkAvailability(id) {
-  const item = shoppingList.find(i => i.id === id);
-  if (!item) return;
-  const storeLabel = selectedStore || 'No store selected';
-  const stockLabels = { in: '✅ In Stock', low: '⚠️ Low Stock (Only 2-3 left)', out: '❌ Out of Stock', unknown: '❓ Status Unknown — Select a store' };
-  const aisle = AISLE_MAP[item.category] || 'Location unknown';
-  showModal(
-    `Availability: ${item.name}`,
-    `${storeLabel}`,
-    `<strong>Stock Status:</strong> ${stockLabels[item.stock]}<br/><br/>` +
-    `<strong>Aisle:</strong> ${aisle}<br/><br/>` +
-    `<strong>Category:</strong> ${item.category}<br/>` +
-    `<strong>Quantity on List:</strong> ${item.qty}<br/><br/>` +
-    (item.stock === 'out' ? `<em style="color:var(--amber-500)">💡 Tip: Try ${stores.find(s => s !== selectedStore) || 'another nearby store'}, which typically stocks this item.</em>` : '')
-  );
-}
-
-/* ================================================================
-   INVENTORY PANEL (RIGHT)
-   ================================================================ */
-function renderInventoryPanel() {
-  const panel = document.getElementById('inventoryPanel');
-  if (!selectedStore) {
-    panel.innerHTML = `<div class="empty-state"><div class="icon">🏪</div><div>Select a store to view aisle-optimized inventory.</div></div>`;
-    return;
-  }
-  // Group active items by aisle
-  const activeItems = shoppingList.filter(i => !i.completed);
-  if (activeItems.length === 0) {
-    panel.innerHTML = `<div class="empty-state"><div class="icon">✅</div><div>All items are checked off! Great shopping trip.</div></div>`;
-    return;
-  }
-  const groups = {};
-  AISLE_ORDER.forEach(a => { groups[a] = []; });
-  activeItems.forEach(item => {
-    const aisle = AISLE_MAP[item.category] || 'Aisle 8 — Other';
-    if (!groups[aisle]) groups[aisle] = [];
-    groups[aisle].push(item);
+/* ══════════════════════════════════════
+   RENDER: SHOPPING LIST
+══════════════════════════════════════ */
+function rebuildShoppingList() {
+  // Clear all injected items, rebuild from active meals only
+  shoppingList = {};
+  activeMealIds.forEach(mid => {
+    const meal = MEAL_DB.find(m => m.id === mid);
+    if (!meal) return;
+    meal.ingredients.forEach(ing => {
+      if (!shoppingList[ing.id]) {
+        shoppingList[ing.id] = { qty: ing.qty, checked: false };
+      }
+      // Don't stack — ingredient already present, keep first qty listed
+    });
   });
-  let html = '<div class="aisle-view">';
-  AISLE_ORDER.forEach(aisle => {
-    const items = groups[aisle];
-    if (!items || items.length === 0) return;
-    html += `
-      <div class="aisle-group">
-        <div class="aisle-header">
-          <span class="aisle-name">${aisle}</span>
-          <span class="aisle-count">${items.length} item${items.length !== 1 ? 's' : ''}</span>
+}
+
+function renderShop() {
+  const empty = document.getElementById('list-empty');
+  const grid  = document.getElementById('shop-grid');
+  const keys  = Object.keys(shoppingList);
+
+  const count = keys.length;
+  document.getElementById('cart-tally').textContent = count;
+  document.getElementById('list-count-chip').textContent = 'LIST: ' + count;
+
+  const badge = document.getElementById('badge-shop');
+  if (count > 0) { badge.textContent = count; badge.classList.add('visible'); }
+  else badge.classList.remove('visible');
+
+  if (count === 0) {
+    empty.classList.add('show'); grid.style.display = 'none'; return;
+  }
+  empty.classList.remove('show'); grid.style.display = 'grid';
+
+  grid.innerHTML = keys.map(id => {
+    const item = shoppingList[id];
+    const info = GROCERY_INDEX[id] || { name: id, aisle: '?' };
+    const stock = STOCK_DATA[id];
+    const pillClass = !storeSelected ? 'pill-meal' : stock === 'ok' ? 'pill-ok' : stock === 'low' ? 'pill-low' : stock === 'empty' ? 'pill-empty' : 'pill-meal';
+    const pillText  = !storeSelected ? 'MEAL' : stock === 'ok' ? 'IN STOCK' : stock === 'low' ? 'LOW' : stock === 'empty' ? 'OUT' : 'MEAL';
+    return `<div class="shop-card ${item.checked ? 'checked' : ''}" onclick="toggleListItem('${id}')">
+      <div class="shop-card-top">
+        <div class="shop-name">${info.name}</div>
+        <div class="shop-check">✓</div>
+      </div>
+      <div class="shop-qty">${item.qty}</div>
+      <div class="shop-aisle">AISLE ${info.aisle}</div>
+      <div class="shop-status-pill ${pillClass}">${pillText}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleListItem(id) {
+  if (shoppingList[id]) shoppingList[id].checked = !shoppingList[id].checked;
+  renderShop();
+}
+
+/* ══════════════════════════════════════
+   RENDER: MEAL PREP
+══════════════════════════════════════ */
+function renderMeals() {
+  const list = document.getElementById('meal-list');
+  const meta = document.getElementById('meal-meta');
+  meta.textContent = activeMealIds.length + ' ACTIVE';
+
+  const badge = document.getElementById('badge-meal');
+  if (activeMealIds.length > 0) { badge.textContent = activeMealIds.length; badge.classList.add('visible'); }
+  else badge.classList.remove('visible');
+
+  if (activeMealIds.length === 0) {
+    list.innerHTML = `<div style="display:flex;flex:1;align-items:center;justify-content:center;">
+      <div style="text-align:center">
+        <div style="font-size:24px;opacity:0.2">🍽</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--text-muted);margin-top:6px;letter-spacing:0.1em">NO MEALS ACTIVE<br>OPEN MEAL LIBRARY</div>
+      </div>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = activeMealIds.map(mid => {
+    const meal = MEAL_DB.find(m => m.id === mid);
+    if (!meal) return '';
+    const ingList = meal.ingredients.map(i => {
+      const info = GROCERY_INDEX[i.id] || { name: i.id };
+      return info.name + ' ' + i.qty;
+    }).join(' · ');
+    return `<div class="meal-block injected-block" id="mblock-${meal.id}">
+      <div class="meal-header" onclick="toggleMealExpand('${meal.id}')">
+        <div class="meal-title-wrap">
+          <span class="meal-icon">${meal.icon}</span>
+          <div>
+            <div class="meal-name">${meal.name}</div>
+            <div class="meal-kcal">${meal.kcal} KCAL · ${meal.ingredients.length} INGR</div>
+          </div>
         </div>
-        <div class="aisle-items">
-          ${items.map(item => `
-            <div class="aisle-item">
-              ${getStockBadgeHtml(item.stock)}
-              <span class="aisle-item-name">${item.name}</span>
-              <span class="aisle-item-qty">${item.qty}</span>
-            </div>
-          `).join('')}
+        <div class="meal-header-right">
+          <div class="meal-injected-pip"></div>
+          <span class="meal-chevron">▶</span>
         </div>
       </div>
-    `;
+      <div class="meal-detail">
+        <div class="macro-card">
+          <div class="macro-label">MACROS</div>
+          <div class="macro-row">
+            <div class="macro-item"><div class="macro-val">${meal.macros.P}g</div><div class="macro-key">PROT</div></div>
+            <div class="macro-item"><div class="macro-val">${meal.macros.C}g</div><div class="macro-key">CARB</div></div>
+            <div class="macro-item"><div class="macro-val">${meal.macros.F}g</div><div class="macro-key">FAT</div></div>
+          </div>
+        </div>
+        <div class="meal-detail-right">
+          <button class="inject-btn injected" onclick="removeMeal(event,'${meal.id}')">✕ REMOVE</button>
+          <div class="ingredients-mini">${ingList}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleMealExpand(id) {
+  const el = document.getElementById('mblock-' + id);
+  if (el) el.classList.toggle('expanded');
+}
+
+function removeMeal(e, id) {
+  e.stopPropagation();
+  activeMealIds = activeMealIds.filter(m => m !== id);
+  rebuildShoppingList();
+  renderMeals();
+  renderShop();
+}
+
+/* ══════════════════════════════════════
+   MEAL LIBRARY MODAL
+══════════════════════════════════════ */
+function openMealLibrary() {
+  libSelection = [...activeMealIds];
+  renderLibraryBody();
+  document.getElementById('modal-library').classList.add('show');
+}
+
+function closeMealLibrary() {
+  document.getElementById('modal-library').classList.remove('show');
+}
+
+function renderLibraryBody() {
+  const body = document.getElementById('library-body');
+  body.innerHTML = MEAL_DB.map(meal => {
+    const sel = libSelection.includes(meal.id);
+    const ingNames = meal.ingredients.map(i => (GROCERY_INDEX[i.id]?.name || i.id) + ' ' + i.qty).join(', ');
+    return `<div class="lib-row" onclick="toggleLibSel('${meal.id}')">
+      <div class="lib-check ${sel ? 'sel' : ''}" id="lchk-${meal.id}">${sel ? '✓' : ''}</div>
+      <div class="lib-info">
+        <div class="lib-name">${meal.icon} ${meal.name}</div>
+        <div class="lib-ingr">${ingNames}</div>
+      </div>
+      <div class="lib-macro">${meal.kcal}cal<br>${meal.macros.P}g P</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleLibSel(id) {
+  if (libSelection.includes(id)) libSelection = libSelection.filter(m => m !== id);
+  else libSelection.push(id);
+  renderLibraryBody();
+}
+
+function confirmLibrarySelection() {
+  activeMealIds = [...libSelection];
+  rebuildShoppingList();
+  closeMealLibrary();
+  renderMeals();
+  renderShop();
+}
+
+/* ══════════════════════════════════════
+   5-DAY MEAL PREP
+══════════════════════════════════════ */
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+// Generate a 5-day plan from active meals (cycle through them)
+// Returns { schedule: [{day, meals}], consolidated: [{id, name, aisle, totalQty, portions}] }
+function generate5DayPlan() {
+  const pool = activeMealIds.length > 0
+    ? activeMealIds.map(id => MEAL_DB.find(m => m.id === id)).filter(Boolean)
+    : MEAL_DB.slice(0, 3); // fallback: first 3
+
+  // Assign meals across 5 days — 2 meals per day cycling
+  const schedule = DAYS.map((day, i) => {
+    const m1 = pool[i % pool.length];
+    const m2 = pool[(i + 1) % pool.length];
+    // Avoid same meal twice in a day if pool has enough
+    const meals = pool.length > 1 && m1.id === m2.id ? [m1] : [m1, m2];
+    return { day, meals };
   });
-  html += '</div>';
-  panel.innerHTML = html;
-}
 
-/* ================================================================
-   SUMMARY METRICS
-   ================================================================ */
-function updateSummary() {
-  const active = shoppingList.filter(i => !i.completed);
-  const total = shoppingList.length;
-  const missing = shoppingList.filter(i => i.stock === 'out').length;
-  const low = shoppingList.filter(i => i.stock === 'low').length;
-  // Estimate cost
-  let estCost = 0;
-  shoppingList.forEach(item => {
-    const base = MOCK_PRICES[item.category] || 5.00;
-    const match = item.qty.match(/^([\d.]+)/);
-    const qty = match ? parseFloat(match[1]) : 1;
-    estCost += base * Math.min(qty, 5);
-  });
-  // Optimization score
-  let score = '—';
-  if (selectedStore) {
-    const inStock = shoppingList.filter(i => i.stock === 'in').length;
-    const pct = shoppingList.length > 0 ? Math.round((inStock / shoppingList.length) * 100) : 0;
-    score = pct + '%';
-  }
-  document.getElementById('metTotalItems').textContent = total;
-  document.getElementById('metEstCost').textContent = '$' + estCost.toFixed(2);
-  document.getElementById('metMissing').textContent = missing;
-  document.getElementById('metLow').textContent = low;
-  document.getElementById('metScore').textContent = score;
-}
-
-/* ================================================================
-   AI CHEF AGENT
-   ================================================================ */
-function updateModeBadge() {
-  document.getElementById('aiModeBadge').textContent = document.getElementById('consultMode').value;
-}
-
-async function handleConsult() {
-  const mode = document.getElementById('consultMode').value;
-  const input = document.getElementById('consultInput').value.trim();
-  if (!input) { showToast('Describe your culinary goals first', 'warning'); return; }
-
-  const btn = document.getElementById('consultBtn');
-  btn.disabled = true;
-  document.getElementById('aiPlaceholder').style.display = 'none';
-  document.getElementById('aiOutputContent').style.display = 'none';
-  document.getElementById('aiSpinner').classList.add('visible');
-  document.getElementById('addToListBtn').style.display = 'none';
-  pendingAiItems = [];
-
-  const apiKey = document.getElementById('geminiApiKey').value.trim();
-  const model = document.getElementById('geminiModel').value;
-
-  const prompt = buildChefPrompt(mode, input);
-
-  try {
-    let responseText;
-    if (apiKey.length > 10) {
-      responseText = await callGeminiAPI(prompt, apiKey, model);
-    } else {
-      await new Promise(r => setTimeout(r, 1400));
-      responseText = getMockChefResponse(mode, input);
-    }
-    renderAiResponse(responseText, mode);
-  } catch (err) {
-    showToast('API error — showing simulated response', 'warning');
-    await new Promise(r => setTimeout(r, 600));
-    renderAiResponse(getMockChefResponse(mode, input), mode);
-  } finally {
-    document.getElementById('aiSpinner').classList.remove('visible');
-    btn.disabled = false;
-  }
-}
-
-function buildChefPrompt(mode, input) {
-  const modeInstructions = {
-    'Recipe Generator': 'Generate a detailed, restaurant-quality recipe. Include: dish name, estimated prep/cook time, servings, ingredient list with exact quantities (each on a new line starting with "- "), step-by-step cooking instructions, and a wine/beverage pairing suggestion.',
-    'Weekly Meal Planner': 'Create a 5-day weekday meal plan (Monday-Friday). For each day, list Breakfast, Lunch, and Dinner. Include a consolidated grocery list with quantities.',
-    'Ingredient Substitutor': 'Identify the key ingredients mentioned and provide 2-3 creative substitutions for each, explaining flavor/texture impact and how to adjust quantities.',
-    'Budget Optimizer': 'Analyze the ingredients and goals provided. Suggest cost-optimized alternatives, bulk-buying tips, and 3 budget-friendly meal ideas that use these ingredients efficiently.',
-  };
-  return `You are a Michelin-starred Executive Chef and culinary consultant embedded in an enterprise Palantir AIP platform. 
-Mode: ${mode}
-User context: "${input}"
-Task: ${modeInstructions[mode]}
-Respond in clear, structured format. Be specific, professional, and creative. Keep response concise but complete.`;
-}
-
-async function callGeminiAPI(prompt, apiKey, model) {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || 'Gemini API error');
-  }
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.';
-}
-
-function getMockChefResponse(mode, input) {
-  const responses = {
-    'Recipe Generator': `**Seared Chicken Piccata with Lemon-Caper Butter Sauce**
-
-⏱ Prep: 15 min  |  🔥 Cook: 22 min  |  🍽 Serves: 4
-
-**Ingredients:**
-- 4 boneless chicken breasts (6 oz each), pounded thin
-- ½ cup all-purpose flour (or gluten-free blend)
-- 3 tbsp olive oil + 2 tbsp unsalted butter
-- ½ cup dry white wine (Pinot Grigio)
-- ¾ cup low-sodium chicken stock
-- 3 tbsp brined capers, drained
-- 2 lemons (zested and juiced)
-- 3 garlic cloves, minced
-- ¼ cup fresh flat-leaf parsley, chopped
-- Kosher salt & freshly cracked black pepper
-
-**Method:**
-1. Season chicken generously with salt and pepper. Dredge in flour, shaking off excess.
-2. Heat olive oil in a stainless skillet over medium-high until shimmering.
-3. Sear chicken 4-5 min per side until golden and cooked through. Remove to a plate.
-4. Reduce heat to medium. Add garlic, sauté 30 seconds. Deglaze with white wine, reduce by half.
-5. Add stock, lemon juice, zest, and capers. Simmer 3 minutes until slightly thickened.
-6. Mount the sauce with cold butter. Taste and adjust seasoning. Return chicken to pan to warm.
-7. Finish with fresh parsley. Serve immediately over angel hair pasta or with roasted asparagus.
-
-**Pairing:** 🍷 A bright, high-acid Vermentino or an unoaked Chardonnay complements the lemony beurre blanc beautifully.`,
-    'Weekly Meal Planner': `**5-Day Executive Meal Plan**
-
-**Monday**
-- 🌅 Breakfast: Greek yogurt parfait with granola & fresh berries
-- 🥗 Lunch: Arugula salad with shaved Parmesan, prosciutto & lemon vinaigrette
-- 🍽 Dinner: Pan-seared salmon with roasted fingerling potatoes & haricots verts
-
-**Tuesday**
-- 🌅 Breakfast: Soft scrambled eggs with herbs & toasted sourdough
-- 🥗 Lunch: Chicken & avocado grain bowl with miso-ginger dressing
-- 🍽 Dinner: Beef short rib tacos with pickled red onion & chipotle crema
-
-**Wednesday**
-- 🌅 Breakfast: Overnight oats with chia, banana & almond butter
-- 🥗 Lunch: Tuscan white bean soup with crusty baguette
-- 🍽 Dinner: Mushroom risotto with truffle oil & aged Parmesan
-
-**Thursday**
-- 🌅 Breakfast: Smashed avocado toast with poached eggs & chili flakes
-- 🥗 Lunch: Niçoise salad with seared ahi tuna
-- 🍽 Dinner: Herb-roasted chicken thighs with preserved lemon gremolata
-
-**Friday**
-- 🌅 Breakfast: Buttermilk pancakes with maple-blueberry compote
-- 🥗 Lunch: BLT croissant with heirloom tomatoes & basil aioli
-- 🍽 Dinner: Grilled ribeye with compound butter, truffle fries & Caesar salad
-
-**Consolidated Grocery List (Key Items):**
-- Salmon fillet (1.5 lbs), Beef short ribs (2 lbs), Chicken thighs (2 lbs), Ribeye steak (16 oz)
-- Arborio rice (2 cups), Assorted fresh herbs, Parmesan block, Heavy cream`,
-    'Ingredient Substitutor': `**Smart Ingredient Substitutions**
-
-Based on your ingredients, here are chef-approved alternatives:
-
-**If replacing Chicken Breast:**
-1. **Cauliflower steaks** — same sear technique; add 5 min cook time. Umami depth from nutritional yeast.
-2. **Firm Tofu** — press overnight, marinate in soy + ginger. Excellent protein swap.
-3. **Pork Tenderloin** — closest flavor profile; reduce oven time by 3 minutes per inch.
-
-**If replacing Heavy Cream:**
-1. **Full-fat coconut milk** — 1:1 swap; adds slight sweetness. Best for Southeast Asian profiles.
-2. **Cashew cream** — soak & blend 1 cup cashews + ½ cup water. Neutral, rich, dairy-free.
-3. **Evaporated skim milk** — reduces calories 60%; slightly thinner consistency.
-
-**If replacing White Wine:**
-1. **Dry vermouth** — 1:1, more aromatic; reduce quantity by 15%.
-2. **Chicken stock + 1 tsp white wine vinegar** — alcohol-free; adds brightness.
-3. **Verjuice** — unfermented grape juice; closest flavor analog available.
-
-*Pro tip: Always substitute by function (fat, acid, umami, sweetness) rather than by ingredient category alone.*`,
-    'Budget Optimizer': `**Budget Optimization Analysis**
-
-**Cost-Smart Swaps (same culinary quality):**
-- Ribeye → **Chuck Eye Steak** ("Poor Man's Ribeye") — $6/lb vs $22/lb, nearly identical fat marbling
-- Fresh Salmon → **Canned Wild Alaskan Sockeye** for weeknight meals, reserve fresh for special occasions
-- Parmesan block → **Pecorino Romano** — sharper flavor, lower cost; use 20% less by volume
-
-**Bulk Buying Opportunities:**
-- Arborio rice: Buy 10 lb bag ($12) vs 2 lb ($6.99) — saves $0.87/lb at HEB
-- Olive oil: Club store 3L tin cuts per-use cost by 58%
-- Fresh herbs: Grow a $3 basil plant instead of $2.49/week bundles → ROI in 2 uses
-
-**3 Budget-Friendly Meals ($4.50/serving or less):**
-
-1. **Pasta e Fagioli** — White beans, pancetta, canned tomatoes, pasta = $3.20/serving
-2. **Sheet Pan Chicken Thighs & Root Veg** — Bone-in thighs ($1.89/lb) with carrots, potatoes = $4.10/serving
-3. **Shakshuka** — Eggs, San Marzano tomatoes, spices, crusty bread = $2.75/serving
-
-**Total Weekly Grocery Budget Target: $85-110** (saves ~30% vs current list estimates)`,
-  };
-  return responses[mode] || responses['Recipe Generator'];
-}
-
-function renderAiResponse(text, mode) {
-  const content = document.getElementById('aiOutputContent');
-  content.style.display = 'block';
-  // Parse markdown-like formatting
-  let html = text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^\*\s(.+)/gm, '<li>$1</li>')
-    .replace(/^-\s(.+)/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-    .replace(/^#{1,3}\s(.+)/gm, '<h4>$1</h4>')
-    .split('\n\n')
-    .map(p => p.trim().startsWith('<') ? p : `<p style="margin:4px 0">${p}</p>`)
-    .join('');
-  content.innerHTML = html;
-
-  // Extract possible items for "Add to List"
-  extractItemsFromResponse(text, mode);
-}
-
-function extractItemsFromResponse(text, mode) {
-  pendingAiItems = [];
-  if (mode === 'Recipe Generator' || mode === 'Weekly Meal Planner') {
-    const lines = text.split('\n');
-    lines.forEach(line => {
-      const m = line.match(/^[-•]\s+(.+?)(?:\s*[\(—–-]\s*.*)?$/);
-      if (m) {
-        const raw = m[1].trim();
-        // Parse qty from beginning
-        const qtyMatch = raw.match(/^([\d½¼¾]+\s*(?:tbsp|tsp|cup|oz|lb|lbs|g|kg|ml|l|can|cloves?|units?)?)\s+(.+)/i);
-        if (qtyMatch) {
-          pendingAiItems.push({ qty: qtyMatch[1].trim(), name: qtyMatch[2].trim() });
-        } else {
-          pendingAiItems.push({ qty: '1 unit', name: raw });
+  // Consolidated ingredient list — count how many times each appears
+  // Store as { ingredientId: { name, aisle, qty (first encountered), portions (count of servings) } }
+  const consolidated = {};
+  schedule.forEach(({ meals }) => {
+    meals.forEach(meal => {
+      meal.ingredients.forEach(ing => {
+        if (!consolidated[ing.id]) {
+          const info = GROCERY_INDEX[ing.id] || { name: ing.id, aisle: '?' };
+          consolidated[ing.id] = { name: info.name, aisle: info.aisle, qty: ing.qty, portions: 0 };
         }
-      }
+        consolidated[ing.id].portions += 1;
+      });
     });
-  }
-  const btn = document.getElementById('addToListBtn');
-  btn.style.display = pendingAiItems.length > 0 ? 'flex' : 'none';
-}
-
-function addAiItemsToList() {
-  if (pendingAiItems.length === 0) return;
-  let added = 0;
-  pendingAiItems.slice(0, 12).forEach(item => {
-    if (!item.name || item.name.length < 3) return;
-    const cat = guessCategoryFromName(item.name);
-    shoppingList.push({
-      id: nextId++,
-      name: capitalizeWords(item.name),
-      category: cat,
-      qty: item.qty,
-      completed: false,
-      stock: selectedStore ? getStockStatus(item.name) : 'unknown'
-    });
-    added++;
   });
-  renderShoppingList();
-  if (selectedStore) renderInventoryPanel();
-  showToast(`Added ${added} items from AI suggestion`, 'success');
-  document.getElementById('addToListBtn').style.display = 'none';
+
+  return { schedule, consolidated };
 }
 
-function guessCategoryFromName(name) {
-  const n = name.toLowerCase();
-  if (/chicken|beef|steak|pork|salmon|tuna|shrimp|lamb|turkey|prosciutto|pancetta|ahi/.test(n)) return 'Meat & Seafood';
-  if (/milk|cream|butter|cheese|parmesan|yogurt|egg|brie|mozzarella/.test(n)) return 'Dairy';
-  if (/bread|baguette|croissant|roll|sourdough|loaf|pastry/.test(n)) return 'Bakery';
-  if (/frozen|ice cream/.test(n)) return 'Frozen';
-  if (/water|juice|wine|beer|soda|sparkling|coffee|tea/.test(n)) return 'Beverages';
-  if (/tomato|lettuce|spinach|arugula|herb|lemon|lime|garlic|onion|mushroom|bell pepper|carrot|potato|avocado|basil|parsley|asparagus/.test(n)) return 'Produce';
-  return 'Pantry';
+let _5dayPlan = null;
+
+function open5DayPrep() {
+  _5dayPlan = generate5DayPlan();
+  renderFiveDayBody();
+  document.getElementById('modal-5day').classList.add('show');
 }
 
-function capitalizeWords(str) {
-  return str.replace(/\b\w/g, c => c.toUpperCase());
+function close5Day() {
+  document.getElementById('modal-5day').classList.remove('show');
 }
 
-/* ================================================================
-   EXPORT / ACTIONS
-   ================================================================ */
-function exportFoundry() {
-  const foundryUrl = document.getElementById('foundryUrl').value.trim();
-  if (!foundryUrl) {
-    showModal(
-      'Foundry Export',
-      'Palantir Foundry Instance Not Configured',
-      `To export your shopping list as Foundry Objects, configure your instance URL in <strong>API & Store Integrations → Palantir Foundry Ontology</strong>.<br/><br/>
-The export will create:<br/>
-• One <code>GroceryList</code> Ontology Object per list<br/>
-• Child <code>GroceryItem</code> Objects linked via the <code>has_item</code> relationship<br/>
-• Stock status properties synced from the Inventory Tracker`
-    );
-    return;
-  }
-  showToast('Exporting to Palantir Foundry…', 'info');
-  setTimeout(() => showToast('✓ 10 objects written to Foundry Ontology', 'success'), 1500);
+function renderFiveDayBody() {
+  const body = document.getElementById('fiveday-body');
+  const { schedule, consolidated } = _5dayPlan;
+
+  const dayRows = schedule.map(({ day, meals }) => {
+    const mealNames = meals.map(m => m.icon + ' ' + m.name).join(' + ');
+    return `<div class="prep-day-row">
+      <div class="prep-day-name">${day}</div>
+      <div class="prep-day-meals">${mealNames}</div>
+    </div>`;
+  }).join('');
+
+  const ingrRows = Object.entries(consolidated).map(([id, data]) => {
+    const stock = STOCK_DATA[id];
+    const pillTxt = !storeSelected ? '' : stock === 'ok' ? '✓' : stock === 'low' ? '⚠' : stock === 'empty' ? '✕' : '';
+    const pillCol = !storeSelected ? '' : stock === 'ok' ? 'var(--green)' : stock === 'low' ? 'var(--amber)' : 'var(--red)';
+    return `<div class="prep-ingr-row">
+      <div>
+        <div class="prep-ingr-name">${data.name} <span style="color:${pillCol};font-size:10px">${pillTxt}</span></div>
+        <div class="prep-ingr-aisle">AISLE ${data.aisle}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="prep-ingr-qty">${data.qty}</div>
+        <div style="font-family:var(--mono);font-size:8px;color:var(--text-muted)">${data.portions}× servings</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const totalKcal = schedule.reduce((sum, { meals }) => sum + meals.reduce((s, m) => s + m.kcal, 0), 0);
+
+  body.innerHTML = `
+    <div class="prep-section-label">▸ DAILY SCHEDULE</div>
+    ${dayRows}
+    <div class="prep-section-label" style="margin-top:14px">▸ CONSOLIDATED INGREDIENTS (no duplicates)</div>
+    <div style="font-family:var(--mono);font-size:8px;color:var(--text-muted);margin-bottom:8px">
+      ${Object.keys(consolidated).length} unique items · ${totalKcal} total kcal for 5 days
+    </div>
+    ${ingrRows}
+  `;
 }
 
-function copyRawList() {
-  const lines = shoppingList.map(i => `[${i.completed ? '✓' : ' '}] ${i.name} — ${i.qty} (${i.category})`);
-  const text = `SHOPPING LIST — ${new Date().toLocaleDateString()}\n${selectedStore ? 'Store: ' + selectedStore + '\n' : ''}\n` + lines.join('\n');
-  navigator.clipboard.writeText(text).then(() => showToast('List copied to clipboard ✓', 'success'));
+function add5DayToList() {
+  if (!_5dayPlan) return;
+  const { consolidated } = _5dayPlan;
+  // Clear existing list, replace with 5-day consolidated
+  shoppingList = {};
+  Object.entries(consolidated).forEach(([id, data]) => {
+    shoppingList[id] = { qty: data.qty + ' ×' + data.portions, checked: false };
+  });
+  close5Day();
+  renderShop();
+  switchTab('shop');
+  flashBanner('▸ 5-DAY PREP LOADED TO SHOPPING LIST', 'var(--cyan)', 'var(--cyan)');
 }
 
-function printView() {
-  const lines = shoppingList.map(i => `• ${i.name} — ${i.qty} [${i.category}]`).join('\n');
-  const win = window.open('', '_blank');
-  win.document.write(`<html><head><title>Shopping List</title><style>body{font-family:sans-serif;padding:30px;max-width:600px;margin:0 auto}h1{font-size:20px;margin-bottom:6px}pre{font-size:13px;line-height:1.8}footer{margin-top:30px;font-size:10px;color:#888}</style></head>
-<body><h1>🛒 Shopping List</h1><p style="color:#666;font-size:12px">${selectedStore || 'No store selected'} — ${new Date().toLocaleDateString()}</p><hr/><pre>${lines}</pre>
-<footer>Generated by Palantir AIP Culinary & Grocery Orchestrator</footer></body></html>`);
-  win.print();
+/* ══════════════════════════════════════
+   RENDER: CONFIG
+══════════════════════════════════════ */
+function renderConfig() {
+  const list = document.getElementById('config-list');
+  list.innerHTML = CONFIG_PARAMS.map((row, i) => {
+    if (row.toggle) return `<div class="config-row">
+      <span class="config-key">${row.key}</span>
+      <div class="toggle-wrap"><div class="toggle ${row.on ? 'on' : ''}" onclick="toggleConfig(${i})"></div></div>
+    </div>`;
+    return `<div class="config-row">
+      <span class="config-key">${row.key}</span>
+      <span class="config-val ${row.cls}" ${row.id ? `id="${row.id}"` : ''}>${row.val}</span>
+    </div>`;
+  }).join('');
 }
 
-/* ================================================================
-   UI UTILITIES
-   ================================================================ */
-function showToast(message, type = 'info', duration = 3000) {
-  const c = document.getElementById('toastContainer');
-  const icons = { info: 'ℹ️', success: '✅', warning: '⚠️', error: '❌' };
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span>${icons[type]}</span><span>${message}</span>`;
-  c.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(16px)'; el.style.transition = 'all 0.25s'; setTimeout(() => el.remove(), 280); }, duration);
+function toggleConfig(i) { CONFIG_PARAMS[i].on = !CONFIG_PARAMS[i].on; renderConfig(); }
+
+/* ══════════════════════════════════════
+   BOOT
+══════════════════════════════════════ */
+function renderAll() {
+  renderStock();
+  renderShop();
+  renderMeals();
+  renderConfig();
 }
 
-function showModal(title, sub, body) {
-  document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalSub').textContent = sub;
-  document.getElementById('modalBody').innerHTML = body;
-  document.getElementById('modalBackdrop').classList.add('open');
-}
-
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('modalBackdrop')) {
-    document.getElementById('modalBackdrop').classList.remove('open');
-  }
-}
-
-/* ================================================================
-   INIT
-   ================================================================ */
-function init() {
-  renderStoreTags();
-  populateStoreSelector();
-  renderShoppingList();
-  renderInventoryPanel();
-  updateSummary();
-  // Auto-select first store for demo
-  if (stores.length > 0) {
-    selectedStore = stores[0];
-    document.getElementById('storeSelector').value = selectedStore;
-    simulateInventory();
-    renderShoppingList();
-    renderInventoryPanel();
-  }
-  showToast('Orchestrator initialized — API key required for live AI responses', 'info', 4000);
-}
-
-document.addEventListener('DOMContentLoaded', init);
+renderAll();
 </script>
 </body>
+</html>
