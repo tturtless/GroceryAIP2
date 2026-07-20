@@ -288,6 +288,72 @@
     .toggle.on { background: rgba(0,240,255,0.2); border-color: var(--cyan); }
     .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 10px; height: 10px; border-radius: 50%; background: var(--text-secondary); transition: all 0.2s; }
     .toggle.on::after { left: 16px; background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
+
+    /* ══ ADD BAR ══ */
+    .add-bar { display: flex; gap: 6px; margin-bottom: 8px; flex-shrink: 0; align-items: flex-end; }
+    #add-input {
+      flex: 1; background: var(--surface2); border: 1px solid var(--border2); border-radius: 5px;
+      padding: 8px 10px; color: var(--text-primary); font-family: var(--sans); font-size: 11px;
+      outline: none; resize: none; overflow: hidden; line-height: 1.4; max-height: 90px;
+      font-family: var(--sans);
+    }
+    #add-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 1px var(--cyan-glow); }
+    #add-input::placeholder { color: var(--text-muted); }
+    #add-btn {
+      flex: 0 0 auto; padding: 8px 13px; border-radius: 5px; border: 1px solid var(--cyan);
+      background: var(--cyan-dim); color: var(--cyan); font-family: var(--mono); font-size: 10px;
+      font-weight: 700; letter-spacing: 0.08em; cursor: pointer;
+    }
+    #add-btn:active { transform: scale(0.95); }
+    .add-hint { font-family: var(--mono); font-size: 7px; color: var(--text-muted); letter-spacing: 0.04em; margin: -3px 0 7px; flex-shrink: 0; }
+
+    /* ══ MASTER LIST (Stock + Shopping combined) ══ */
+    #master-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+    .dept-section { margin-bottom: 10px; }
+    .dept-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      font-family: var(--mono); font-size: 8.5px; font-weight: 700; letter-spacing: 0.1em;
+      color: var(--amber); text-transform: uppercase; margin-bottom: 5px;
+      border-bottom: 1px solid var(--border); padding-bottom: 3px;
+    }
+    .dept-count { color: var(--text-muted); font-weight: 400; }
+    .dept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+
+    .item-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 7px 9px; display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden; }
+    .item-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+    .item-card.st-green::before { background: var(--green); }
+    .item-card.st-grey::before  { background: var(--text-muted); }
+    .item-card.st-red::before   { background: var(--red); }
+    .item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 4px; }
+    .item-name { font-family: var(--sans); font-size: 10.5px; font-weight: 600; color: var(--text-primary); line-height: 1.25; }
+    .item-x { font-size: 10px; color: var(--text-muted); cursor: pointer; padding: 0 2px; flex-shrink: 0; }
+    .item-qty { font-family: var(--mono); font-size: 8.5px; color: var(--cyan); font-weight: 700; }
+    .item-row-bottom { display: flex; align-items: center; justify-content: space-between; gap: 5px; margin-top: 1px; }
+
+    .status-btn {
+      display: flex; align-items: center; gap: 4px; border: none; background: none; cursor: pointer;
+      padding: 2px 0; font-family: var(--mono); font-size: 7.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .st-green .status-dot { background: var(--green); box-shadow: 0 0 5px var(--green); }
+    .st-green .status-btn { color: var(--green); }
+    .st-grey .status-dot  { background: var(--text-secondary); }
+    .st-grey .status-btn  { color: var(--text-secondary); }
+    .st-red .status-dot   { background: var(--red); box-shadow: 0 0 5px var(--red); }
+    .st-red .status-btn   { color: var(--red); }
+    .status-btn:active { transform: scale(0.93); }
+
+    .check-link {
+      font-family: var(--mono); font-size: 7px; font-weight: 700; letter-spacing: 0.04em;
+      color: var(--cyan); text-decoration: none; border: 1px solid var(--cyan); border-radius: 3px;
+      padding: 2px 5px; white-space: nowrap; background: var(--cyan-dim);
+    }
+    .check-link:active { transform: scale(0.93); }
+
+    #master-empty { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+    #master-empty.show { display: flex; }
+
+    .store-link { color: var(--amber); text-decoration: none; border-bottom: 1px dotted var(--amber); }
   </style>
 </head>
 <body>
@@ -300,7 +366,7 @@
     <div class="hud-top-row">
       <div class="hud-title-block">
         <span class="sys-label">▸ AIP GROCERY CONSOLE</span>
-        <span class="store-name-line">WEGMANS · 4721 Virginia Beach Blvd · VB, VA 23462</span>
+        <span class="store-name-line"><a class="store-link" href="https://www.wegmans.com/stores/virginia-beach-va" target="_blank" rel="noopener">WEGMANS VB · 4721 Virginia Beach Blvd · VB, VA 23462 ↗</a></span>
       </div>
       <div class="sys-id" id="sync-time">NODE-VB01<br>--:--</div>
     </div>
@@ -320,20 +386,16 @@
     </div>
     <div class="hud-btn-row">
       <button id="sync-btn" onclick="syncData()">
-        <span>⟳</span> <span id="sync-label">SYNC WEGMANS INVENTORY</span>
+        <span>⟳</span> <span id="sync-label">AUTO-CHECK KNOWN ITEMS</span>
       </button>
     </div>
   </div>
 
   <!-- ══ BUBBLES ══ -->
   <div id="bubble-zone">
-    <div class="bubble active" id="tab-stock" onclick="switchTab('stock')">
-      <div class="bubble-ring"><div class="bubble-icon">📡</div><div class="bubble-badge" id="badge-stock"></div></div>
-      <div class="bubble-label">Stock<br>Intel</div>
-    </div>
-    <div class="bubble" id="tab-shop" onclick="switchTab('shop')">
-      <div class="bubble-ring"><div class="bubble-icon">📋</div><div class="bubble-badge" id="badge-shop"></div></div>
-      <div class="bubble-label">Shopping<br>List</div>
+    <div class="bubble active" id="tab-master" onclick="switchTab('master')">
+      <div class="bubble-ring"><div class="bubble-icon">📡</div><div class="bubble-badge" id="badge-master"></div></div>
+      <div class="bubble-label">Stock<br>&amp; List</div>
     </div>
     <div class="bubble" id="tab-meal" onclick="switchTab('meal')">
       <div class="bubble-ring"><div class="bubble-icon">🍽</div><div class="bubble-badge" id="badge-meal"></div></div>
@@ -348,31 +410,22 @@
   <!-- ══ OP ZONE ══ -->
   <div id="op-zone">
 
-    <!-- STOCK INTEL -->
-    <div class="view-panel active" id="panel-stock">
+    <!-- STOCK + LIST (combined) -->
+    <div class="view-panel active" id="panel-master">
       <div class="panel-header">
-        <span class="panel-title">▸ STOCK INTEL</span>
-        <span class="panel-meta" id="stock-timestamp">SYNC REQUIRED</span>
+        <span class="panel-title">▸ STOCK &amp; LIST</span>
+        <span class="panel-meta"><span id="cart-tally">0</span> TRACKED · <span id="stock-timestamp">NOT CHECKED</span></span>
       </div>
-      <div id="stock-lock" class="show">
-        <div class="lock-icon">🔒</div>
-        <div class="lock-msg">INVENTORY NOT LOADED<br>TAP SYNC TO CONNECT</div>
-        <div class="lock-hint">Pulling live stock from Wegmans VB · (757) 271-0500</div>
+      <div class="add-bar">
+        <textarea id="add-input" rows="1" placeholder="Type an item, or paste a whole list (one per line or comma-separated)…" onkeydown="handleAddKey(event)" oninput="autoGrow(this)"></textarea>
+        <button id="add-btn" onclick="addItem()">+ ADD</button>
       </div>
-      <div class="stock-grid" id="stock-grid" style="display:none"></div>
-    </div>
-
-    <!-- SHOPPING LIST -->
-    <div class="view-panel" id="panel-shop">
-      <div class="panel-header">
-        <span class="panel-title">▸ SHOPPING LIST</span>
-        <span class="panel-meta"><span id="cart-tally">0</span> ITEMS QUEUED</span>
-      </div>
-      <div id="list-empty" class="show">
+      <div class="add-hint">ENTER TO ADD · SHIFT+ENTER FOR A NEW LINE · PASTE A FULL LIST AT ONCE</div>
+      <div id="master-empty">
         <div class="empty-icon">📋</div>
-        <div class="empty-msg">LIST IS EMPTY<br>INJECT MEALS IN MEAL PREP</div>
+        <div class="empty-msg">NOTHING TRACKED YET<br>ADD AN ITEM ABOVE OR INJECT MEALS IN MEAL PREP</div>
       </div>
-      <div class="shop-grid" id="shop-grid" style="display:none"></div>
+      <div id="master-scroll" style="display:none"></div>
     </div>
 
     <!-- MEAL PREP -->
@@ -588,22 +641,85 @@ const STOCK_BASELINE = {
 
 const CONFIG_PARAMS = [
   { key: 'STORE',         val: 'Wegmans VB',    cls: 'info' },
+  { key: 'STORE PAGE',    val: 'wegmans.com/stores/virginia-beach-va', cls: 'info', link: 'https://www.wegmans.com/stores/virginia-beach-va' },
   { key: 'PHONE',         val: '757-271-0500',   cls: 'ok' },
   { key: 'HOURS',         val: '6AM – MIDNIGHT', cls: 'ok' },
   { key: 'STORE NETWORK', val: '', toggle: true, on: true  },
   { key: 'PUSH ALERTS',   val: '', toggle: true, on: true  },
-  { key: 'LOW STOCK WARN',val: '', toggle: true, on: true  },
+  { key: 'OUT-OF-STOCK WARN', val: '', toggle: true, on: true  },
   { key: 'DATA CACHE',    val: '4.2 MB',         cls: 'warn' },
-  { key: 'LAST SYNC',     val: 'PENDING',        cls: 'warn', id: 'cfg-sync' },
+  { key: 'LAST AUTO-CHECK', val: 'PENDING',      cls: 'warn', id: 'cfg-sync' },
 ];
 
-/* ══ STATE ══ */
-let synced       = false;
-let STOCK_DATA   = {};
+/* ══════════════════════════════════════
+   DEPARTMENT LAYOUT — Wegmans VB store order
+   Used to sort sections top-to-bottom the way you'd
+   actually walk the store, and to guess a department
+   for anything typed into the add bar.
+══════════════════════════════════════ */
+const DEPT_ORDER_PREFIX = [
+  'Produce', 'Bakery', 'Meat', 'Seafood', 'Dairy', 'Cheese',
+  'Grocery', 'Bulk Foods', 'Frozen', 'Health', 'Wine', 'General'
+];
+function deptPriority(dept) {
+  const prefix = DEPT_ORDER_PREFIX.find(p => dept.startsWith(p));
+  const base = prefix ? DEPT_ORDER_PREFIX.indexOf(prefix) : DEPT_ORDER_PREFIX.length;
+  const aisleMatch = dept.match(/Aisle (\d+)/i);
+  const aisleNum = aisleMatch ? parseInt(aisleMatch[1], 10) : 0;
+  return base * 100 + aisleNum;
+}
+
+const DEPT_KEYWORDS = [
+  { dept: 'Produce · Entry',        words: ['apple','banana','lettuce','kale','pepper','onion','garlic','potato','carrot','berry','strawberr','blueberr','grape','orange','avocado','tomato','cucumber','spinach','broccoli','herb','mushroom','celery','cilantro','lime','fruit','vegetable','squash','zucchini','melon','pear','mango'] },
+  { dept: 'Bakery · Front',         words: ['bread','bagel','muffin','cake','roll','croissant','donut','doughnut','pastry','baguette','tortilla','pie'] },
+  { dept: 'Meat · Perimeter',       words: ['chicken','beef','pork','steak','sausage','bacon','ground beef','ground turkey','ham','lamb'] },
+  { dept: 'Seafood · Perimeter',    words: ['salmon','shrimp','fish','tuna','crab','tilapia','cod','scallop','lobster'] },
+  { dept: 'Dairy · Back Wall',      words: ['milk','yogurt','cream','half and half','egg','oat milk','almond milk'] },
+  { dept: 'Cheese · Back Wall',     words: ['cheese','mozzarella','cheddar','parmesan','feta','brie'] },
+  { dept: 'Frozen · Back Aisle',    words: ['frozen','ice cream','waffle','frozen pizza','popsicle'] },
+  { dept: 'Bulk Foods · Aisle 3',   words: ['bulk','trail mix','granola','nuts','almond','cashew','walnut','pecan'] },
+  { dept: 'Health · Wellness Aisle',words: ['protein','vitamin','supplement','protein bar','probiotic'] },
+  { dept: 'Wine & Beer · Aisle 14', words: ['wine','beer','liquor','spirits','seltzer'] },
+  { dept: 'Grocery · Aisle 4',      words: ['rice','pasta','quinoa'] },
+  { dept: 'Grocery · Aisle 5',      words: ['oats','oatmeal','cereal'] },
+  { dept: 'Grocery · Aisle 6',      words: ['oil','vinegar'] },
+  { dept: 'Grocery · Aisle 7',      words: ['peanut butter','almond butter','jam','jelly'] },
+  { dept: 'Grocery · Aisle 8',      words: ['can','canned','bean','soup'] },
+  { dept: 'Grocery · Aisle 9',      words: ['sauce','salsa','ketchup','mustard','condiment'] },
+  { dept: 'Grocery · Aisle 10',     words: ['chip','cracker','snack','pretzel','popcorn'] },
+  { dept: 'Grocery · Aisle 11',     words: ['spice','seasoning','salt','pepper flakes'] },
+  { dept: 'Grocery · Aisle 12',     words: ['coffee','tea'] },
+];
+function slugify(str) {
+  return str.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'item';
+}
+function guessDept(name) {
+  const n = name.toLowerCase();
+  // check for an exact/near match against the known catalog first
+  for (const [id, info] of Object.entries(GROCERY_INDEX)) {
+    if (n === info.name.toLowerCase() || n.includes(id.replace('_',' ')) || info.name.toLowerCase().includes(n)) {
+      return { dept: info.dept, matchedId: id };
+    }
+  }
+  for (const row of DEPT_KEYWORDS) {
+    if (row.words.some(w => n.includes(w))) return { dept: row.dept, matchedId: null };
+  }
+  return { dept: 'General · Unsorted', matchedId: null };
+}
+
+/* ══ STATE ══
+   MASTER_ITEMS[id] = { name, dept, status, qty, manual }
+   status: 'grey' (unsure) · 'green' (in stock) · 'red' (checked, out of stock)
+*/
+let MASTER_ITEMS = {};
+let everChecked  = false;
 let activeMealIds= [];
-let shoppingList = {};   // { id: { qty, checked } }
 let libSelection = [];
 let _5dayPlan    = null;
+
+// Master list starts EMPTY — the user builds it item by item (or pastes a list).
+// GROCERY_INDEX above is only used as a lookup to guess names/departments/status
+// carry-over for meal-prep ingredients; it does not pre-fill the tracker.
 
 /* ══ TAB ══ */
 function switchTab(tab) {
@@ -613,27 +729,86 @@ function switchTab(tab) {
   document.getElementById('panel-' + tab).classList.add('active');
 }
 
-/* ══ SYNC ══ */
+/* ══ ADD ITEM (type bar — single item OR a pasted list) ══ */
+function handleAddKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    addItem();
+  }
+}
+
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 90) + 'px';
+}
+
+function addItem() {
+  const input = document.getElementById('add-input');
+  const raw = input.value;
+  if (!raw.trim()) return;
+
+  // split a pasted list on newlines AND commas, so either format works
+  const names = raw.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+
+  let added = 0, dupes = 0;
+  names.forEach(name => {
+    const { dept, matchedId } = guessDept(name);
+    const id = matchedId || ('m_' + slugify(name));
+    if (MASTER_ITEMS[id]) { dupes++; return; }
+    MASTER_ITEMS[id] = { name, dept, status: 'grey', qty: null, manual: true };
+    added++;
+  });
+
+  input.value = '';
+  autoGrow(input);
+  renderMaster();
+
+  if (added === 0) flash('▸ ALREADY TRACKED · NO NEW ITEMS', 'var(--amber)', 'var(--amber)');
+  else if (names.length === 1) flash('▸ ADDED · ' + names[0].toUpperCase(), 'var(--cyan)', 'var(--cyan)');
+  else flash('▸ ADDED ' + added + ' ITEMS' + (dupes ? ' · ' + dupes + ' ALREADY TRACKED' : ''), 'var(--cyan)', 'var(--cyan)');
+}
+
+function removeManualItem(e, id) {
+  e.stopPropagation();
+  if (MASTER_ITEMS[id] && MASTER_ITEMS[id].manual) delete MASTER_ITEMS[id];
+  renderMaster();
+}
+
+/* ══ CYCLE STATUS: grey → green → red → grey ══ */
+function cycleStatus(e, id) {
+  e.stopPropagation();
+  const item = MASTER_ITEMS[id];
+  if (!item) return;
+  item.status = item.status === 'grey' ? 'green' : item.status === 'green' ? 'red' : 'grey';
+  renderMaster();
+}
+
+/* ══ CHECK ON WEGMANS ══ */
+function checkOnWegmans(e, name) {
+  e.stopPropagation();
+  const url = 'https://www.wegmans.com/shop/search?query=' + encodeURIComponent(name);
+  window.open(url, '_blank', 'noopener');
+}
+
+/* ══ AUTO-CHECK (simulated sync of catalog items) ══ */
 function syncData() {
   const btn = document.getElementById('sync-btn');
   const lbl = document.getElementById('sync-label');
   btn.classList.add('syncing'); lbl.textContent = 'CONNECTING…';
 
   setTimeout(() => {
-    // Simulate live stock with slight randomness around baseline
-    STOCK_DATA = {};
     Object.entries(STOCK_BASELINE).forEach(([id, base]) => {
+      if (!MASTER_ITEMS[id] || MASTER_ITEMS[id].manual) return;
       const roll = Math.random();
-      if (base === 'empty') STOCK_DATA[id] = roll < 0.25 ? 'low' : 'empty';
-      else if (base === 'low') STOCK_DATA[id] = roll < 0.35 ? 'ok' : roll > 0.85 ? 'empty' : 'low';
-      else STOCK_DATA[id] = roll < 0.1 ? 'low' : 'ok';
+      if (base === 'empty') MASTER_ITEMS[id].status = roll < 0.3 ? 'grey' : 'red';
+      else if (base === 'low') MASTER_ITEMS[id].status = roll < 0.5 ? 'green' : roll > 0.85 ? 'red' : 'grey';
+      else MASTER_ITEMS[id].status = roll < 0.12 ? 'grey' : 'green';
     });
-    synced = true;
+    everChecked = true;
 
     const now = new Date();
     const ts = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
     document.getElementById('sync-time').textContent = 'NODE-VB01\n' + ts;
-    document.getElementById('stock-timestamp').textContent = 'SYNCED ' + ts;
 
     const dot = document.getElementById('store-dot');
     dot.style.background = 'var(--green)'; dot.style.boxShadow = '0 0 5px var(--green)';
@@ -643,9 +818,9 @@ function syncData() {
     if (cfgS) { cfgS.textContent = ts; cfgS.className = 'config-val ok'; }
 
     renderAll();
-    btn.classList.remove('syncing'); btn.classList.add('synced'); lbl.textContent = '✓ SYNCED';
-    flash('▸ WEGMANS VB INVENTORY LOADED', 'var(--green)', 'var(--green)');
-    setTimeout(() => { btn.classList.remove('synced'); lbl.textContent = 'SYNC WEGMANS INVENTORY'; }, 2000);
+    btn.classList.remove('syncing'); btn.classList.add('synced'); lbl.textContent = '✓ CHECKED';
+    flash('▸ KNOWN ITEMS AUTO-CHECKED · MANUAL ITEMS NEED A TAP', 'var(--green)', 'var(--green)');
+    setTimeout(() => { btn.classList.remove('synced'); lbl.textContent = 'AUTO-CHECK KNOWN ITEMS'; }, 2000);
   }, 600);
 }
 
@@ -657,85 +832,74 @@ function flash(msg, color, border) {
   setTimeout(() => b.classList.remove('show'), 2000);
 }
 
-/* ══ RENDER STOCK ══ */
-function renderStock() {
-  const lock  = document.getElementById('stock-lock');
-  const grid  = document.getElementById('stock-grid');
-  const stamp = document.getElementById('stock-timestamp');
-
-  if (!synced) {
-    lock.classList.add('show'); grid.style.display = 'none';
-    stamp.textContent = 'SYNC REQUIRED';
-    document.getElementById('badge-stock').classList.remove('visible');
-    return;
-  }
-
-  lock.classList.remove('show'); grid.style.display = 'grid';
-
-  // Show only items that appear in at least one meal (or all if none active)
-  const show = Object.keys(GROCERY_INDEX);
-  grid.innerHTML = show.map(id => {
-    const info = GROCERY_INDEX[id];
-    const s    = STOCK_DATA[id] || 'ok';
-    const lbl  = s === 'ok' ? 'IN STOCK' : s === 'low' ? 'LOW STOCK' : 'OUT OF STOCK';
-    return `<div class="stock-row ${s}">
-      <div class="stock-name">${info.name}</div>
-      <div class="stock-dept">${info.dept}</div>
-      <div class="stock-status-txt">● ${lbl}</div>
-    </div>`;
-  }).join('');
-
-  const issues = Object.values(STOCK_DATA).filter(s => s !== 'ok').length;
-  const badge  = document.getElementById('badge-stock');
-  if (issues > 0) { badge.textContent = issues; badge.classList.add('visible'); }
-  else badge.classList.remove('visible');
-}
-
-/* ══ SHOPPING LIST ══ */
+/* ══ SHOPPING LIST (meal ingredients feed into MASTER_ITEMS qty) ══ */
 function rebuildShoppingList() {
-  shoppingList = {};
+  // drop any non-manual (meal-sourced) items first — they'll be re-added below if still needed
+  Object.keys(MASTER_ITEMS).forEach(id => { if (!MASTER_ITEMS[id].manual) delete MASTER_ITEMS[id]; });
   activeMealIds.forEach(mid => {
     const meal = MEAL_DB.find(m => m.id === mid);
     if (!meal) return;
     meal.ingredients.forEach(ing => {
-      if (!shoppingList[ing.id]) shoppingList[ing.id] = { qty: ing.qty, checked: false };
+      if (!MASTER_ITEMS[ing.id]) {
+        const info = GROCERY_INDEX[ing.id] || { name: ing.id, dept: 'General · Unsorted' };
+        MASTER_ITEMS[ing.id] = { name: info.name, dept: info.dept, status: 'grey', qty: null, manual: false };
+      }
+      MASTER_ITEMS[ing.id].qty = ing.qty;
     });
   });
 }
 
-function renderShop() {
-  const empty = document.getElementById('list-empty');
-  const grid  = document.getElementById('shop-grid');
-  const keys  = Object.keys(shoppingList);
-  const count = keys.length;
+/* ══ RENDER MASTER (Stock + List combined, grouped by store department) ══ */
+function renderMaster() {
+  const empty = document.getElementById('master-empty');
+  const scroll = document.getElementById('master-scroll');
+  const ids = Object.keys(MASTER_ITEMS);
+  const count = ids.length;
 
   document.getElementById('cart-tally').textContent = count;
-  document.getElementById('list-count-chip').textContent = 'LIST: ' + count;
-  const badge = document.getElementById('badge-shop');
-  if (count > 0) { badge.textContent = count; badge.classList.add('visible'); }
+  document.getElementById('list-count-chip').textContent = 'TRACKED: ' + count;
+  document.getElementById('stock-timestamp').textContent = everChecked ? 'LAST AUTO-CHECK ' + (document.getElementById('cfg-sync')?.textContent || '') : 'NOT CHECKED';
+
+  const outCount = ids.filter(id => MASTER_ITEMS[id].status === 'red').length;
+  const badge = document.getElementById('badge-master');
+  if (outCount > 0) { badge.textContent = outCount; badge.classList.add('visible'); }
   else badge.classList.remove('visible');
 
-  if (count === 0) { empty.classList.add('show'); grid.style.display = 'none'; return; }
-  empty.classList.remove('show'); grid.style.display = 'grid';
+  if (count === 0) { empty.classList.add('show'); scroll.style.display = 'none'; return; }
+  empty.classList.remove('show'); scroll.style.display = 'block';
 
-  grid.innerHTML = keys.map(id => {
-    const item  = shoppingList[id];
-    const info  = GROCERY_INDEX[id] || { name: id, dept: '—' };
-    const stock = synced ? STOCK_DATA[id] : null;
-    const pillCls = !stock ? 'pill-meal' : stock === 'ok' ? 'pill-ok' : stock === 'low' ? 'pill-low' : 'pill-empty';
-    const pillTxt = !stock ? 'MEAL' : stock === 'ok' ? 'IN STOCK' : stock === 'low' ? 'LOW' : 'OUT';
-    return `<div class="shop-card ${item.checked ? 'checked' : ''}" onclick="toggleListItem('${id}')">
-      <div class="shop-card-top"><div class="shop-name">${info.name}</div><div class="shop-check">✓</div></div>
-      <div class="shop-qty">${item.qty}</div>
-      <div class="shop-dept">${info.dept}</div>
-      <div class="shop-pill ${pillCls}">${pillTxt}</div>
+  // group by department
+  const byDept = {};
+  ids.forEach(id => {
+    const it = MASTER_ITEMS[id];
+    if (!byDept[it.dept]) byDept[it.dept] = [];
+    byDept[it.dept].push(id);
+  });
+
+  const deptNames = Object.keys(byDept).sort((a, b) => deptPriority(a) - deptPriority(b));
+
+  scroll.innerHTML = deptNames.map(dept => {
+    const deptIds = byDept[dept].sort((a, b) => MASTER_ITEMS[a].name.localeCompare(MASTER_ITEMS[b].name));
+    const cards = deptIds.map(id => {
+      const it = MASTER_ITEMS[id];
+      const statusLbl = it.status === 'green' ? 'IN STOCK' : it.status === 'red' ? 'OUT OF STOCK' : 'UNSURE';
+      return `<div class="item-card st-${it.status}">
+        <div class="item-top">
+          <div class="item-name">${it.name}</div>
+          ${it.manual ? `<div class="item-x" onclick="removeManualItem(event,'${id}')">✕</div>` : ''}
+        </div>
+        ${it.qty ? `<div class="item-qty">${it.qty}</div>` : ''}
+        <div class="item-row-bottom">
+          <button class="status-btn" onclick="cycleStatus(event,'${id}')"><span class="status-dot"></span>${statusLbl}</button>
+          <a class="check-link" href="#" onclick="checkOnWegmans(event,'${it.name.replace(/'/g,"\\'")}')">🔍 CHECK</a>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="dept-section">
+      <div class="dept-head"><span>${dept}</span><span class="dept-count">${deptIds.length}</span></div>
+      <div class="dept-grid">${cards}</div>
     </div>`;
   }).join('');
-}
-
-function toggleListItem(id) {
-  if (shoppingList[id]) shoppingList[id].checked = !shoppingList[id].checked;
-  renderShop();
 }
 
 /* ══ MEAL PREP ══ */
@@ -798,7 +962,7 @@ function removeMeal(e, id) {
   activeMealIds = activeMealIds.filter(m => m !== id);
   rebuildShoppingList();
   renderMeals();
-  renderShop();
+  renderMaster();
 }
 
 /* ══ MEAL LIBRARY ══ */
@@ -836,7 +1000,7 @@ function confirmLibrarySelection() {
   rebuildShoppingList();
   closeMealLibrary();
   renderMeals();
-  renderShop();
+  renderMaster();
   if (activeMealIds.length > 0) flash('▸ ' + activeMealIds.length + ' MEALS ACTIVATED · LIST UPDATED', 'var(--purple)', 'var(--purple)');
 }
 
@@ -893,8 +1057,8 @@ function renderFiveDayBody() {
 
   const sortedIngr = Object.entries(consolidated).sort((a,b) => a[1].dept.localeCompare(b[1].dept));
   const ingrRows = sortedIngr.map(([id, data]) => {
-    const stock  = synced ? STOCK_DATA[id] : null;
-    const flag   = !stock ? '' : stock === 'ok' ? '<span style="color:var(--green)">✓</span>' : stock === 'low' ? '<span style="color:var(--amber)">⚠</span>' : '<span style="color:var(--red)">✕</span>';
+    const stock  = MASTER_ITEMS[id] ? MASTER_ITEMS[id].status : null;
+    const flag   = !stock ? '' : stock === 'green' ? '<span style="color:var(--green)">✓</span>' : stock === 'red' ? '<span style="color:var(--red)">✕</span>' : '<span style="color:var(--text-secondary)">?</span>';
     return `<div class="prep-ingr-row">
       <div class="prep-ingr-left">
         <div class="prep-ingr-name">${data.name} ${flag}</div>
@@ -920,14 +1084,17 @@ function renderFiveDayBody() {
 
 function add5DayToList() {
   if (!_5dayPlan) return;
-  shoppingList = {};
+  Object.values(MASTER_ITEMS).forEach(it => { if (!it.manual) it.qty = null; });
+  activeMealIds = [];
   Object.entries(_5dayPlan.consolidated).forEach(([id, data]) => {
-    shoppingList[id] = { qty: data.qty + ' ×' + data.portions, checked: false };
+    if (!MASTER_ITEMS[id]) MASTER_ITEMS[id] = { name: data.name, dept: data.dept, status: 'grey', qty: null, manual: false };
+    MASTER_ITEMS[id].qty = data.qty + ' ×' + data.portions;
   });
   close5Day();
-  renderShop();
-  switchTab('shop');
-  flash('▸ 5-DAY PREP LOADED · ' + Object.keys(shoppingList).length + ' ITEMS TO WEGMANS LIST', 'var(--cyan)', 'var(--cyan)');
+  renderMeals();
+  renderMaster();
+  switchTab('master');
+  flash('▸ 5-DAY PREP LOADED · ' + Object.keys(_5dayPlan.consolidated).length + ' ITEMS TO WEGMANS LIST', 'var(--cyan)', 'var(--cyan)');
 }
 
 /* ══ CONFIG ══ */
@@ -937,6 +1104,10 @@ function renderConfig() {
       <span class="config-key">${row.key}</span>
       <div class="toggle ${row.on?'on':''}" onclick="CONFIG_PARAMS[${i}].on=!CONFIG_PARAMS[${i}].on;renderConfig()"></div>
     </div>`;
+    if (row.link) return `<div class="config-row">
+      <span class="config-key">${row.key}</span>
+      <a class="config-val ${row.cls||''}" href="${row.link}" target="_blank" rel="noopener" style="text-decoration:none">${row.val} ↗</a>
+    </div>`;
     return `<div class="config-row">
       <span class="config-key">${row.key}</span>
       <span class="config-val ${row.cls||''}" ${row.id?`id="${row.id}"`:''}>${row.val}</span>
@@ -944,7 +1115,7 @@ function renderConfig() {
   }).join('');
 }
 
-function renderAll() { renderStock(); renderShop(); renderMeals(); renderConfig(); }
+function renderAll() { renderMaster(); renderMeals(); renderConfig(); }
 renderAll();
 </script>
 </body>
