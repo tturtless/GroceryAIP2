@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>AIP GROCERY CONSOLE</title>
+  <title>AIP · WEGMANS VB</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -44,81 +44,58 @@
     }
 
     #app {
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      overflow: hidden;
+      display: flex; flex-direction: column;
+      height: 100dvh; overflow: hidden;
       background: var(--void);
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     }
 
     #app::before {
-      content: '';
-      position: fixed; inset: 0;
+      content: ''; position: fixed; inset: 0;
       background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
-      pointer-events: none;
-      z-index: 1000;
+      pointer-events: none; z-index: 1000;
     }
 
     /* ══ HUD ══ */
     #hud {
       flex: 0 0 20dvh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      display: flex; flex-direction: column; justify-content: center;
       padding: 0 14px;
       border-bottom: 1px solid var(--border);
       background: linear-gradient(180deg, rgba(0,240,255,0.04) 0%, transparent 100%);
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
     #hud::after {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
       background: linear-gradient(90deg, transparent, var(--cyan), transparent);
     }
-    .hud-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-    .sys-label { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; color: var(--cyan); text-transform: uppercase; }
-    .sys-id { font-family: var(--mono); font-size: 8px; color: var(--text-secondary); letter-spacing: 0.1em; }
-    .hud-metrics { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: nowrap; }
-    .metric-chip { display: flex; align-items: center; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 3px 7px; }
+
+    .hud-top-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .hud-title-block {}
+    .sys-label { font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.16em; color: var(--cyan); text-transform: uppercase; display: block; }
+    .store-name-line { font-family: var(--mono); font-size: 8px; color: var(--amber); letter-spacing: 0.1em; margin-top: 1px; display: block; }
+    .sys-id { font-family: var(--mono); font-size: 8px; color: var(--text-secondary); letter-spacing: 0.08em; text-align: right; }
+
+    .hud-metrics { display: flex; gap: 5px; margin-bottom: 7px; }
+    .metric-chip { display: flex; align-items: center; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 3px 6px; }
     .metric-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
     .metric-dot.green { background: var(--green); box-shadow: 0 0 5px var(--green); animation: pulse 2s infinite; }
     .metric-dot.amber { background: var(--amber); box-shadow: 0 0 5px var(--amber); }
     .metric-dot.cyan  { background: var(--cyan);  box-shadow: 0 0 5px var(--cyan); }
-    .metric-dot.red   { background: var(--red);   box-shadow: 0 0 5px var(--red); }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-    .metric-val { font-family: var(--mono); font-size: 9px; color: var(--text-primary); white-space: nowrap; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.35} }
+    .metric-val { font-family: var(--mono); font-size: 8.5px; color: var(--text-primary); white-space: nowrap; }
 
-    /* HUD store selector row */
-    .hud-store-row { display: flex; gap: 6px; margin-bottom: 7px; }
-    .store-select {
-      flex: 1;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      border-radius: 5px;
-      color: var(--text-primary);
-      font-family: var(--mono);
-      font-size: 9px;
-      padding: 5px 8px;
-      appearance: none;
-      -webkit-appearance: none;
-      cursor: pointer;
-      letter-spacing: 0.06em;
-    }
-    .store-select:focus { outline: none; border-color: var(--cyan); }
-    .store-select option { background: #0D1526; }
-
+    .hud-btn-row { display: flex; gap: 6px; }
     #sync-btn {
-      flex: 0 0 auto;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      padding: 5px 12px;
-      border-radius: 5px;
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 7px 0; border-radius: 5px;
       border: 1px solid var(--cyan);
       background: linear-gradient(135deg, rgba(0,240,255,0.1), rgba(0,240,255,0.04));
-      color: var(--cyan);
-      font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-      cursor: pointer; transition: all 0.15s ease;
+      color: var(--cyan); font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      cursor: pointer; transition: all 0.15s;
     }
     #sync-btn:active { transform: scale(0.97); }
     #sync-btn.syncing { border-color: var(--amber); color: var(--amber); }
@@ -127,36 +104,32 @@
     /* ALERT BANNER */
     #alert-banner {
       position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
-      display: flex; align-items: center; justify-content: center;
-      padding: 10px;
-      background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(0,240,255,0.1));
-      border-bottom: 1px solid var(--green);
-      font-family: var(--mono); font-size: 11px; font-weight: 700;
-      color: var(--green); letter-spacing: 0.2em;
+      display: flex; align-items: center; justify-content: center; padding: 10px;
+      font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
       transform: translateY(-100%); transition: transform 0.2s ease;
+      border-bottom: 1px solid;
     }
     #alert-banner.show { transform: translateY(0); }
 
-    /* ══ BUBBLE ZONE ══ */
+    /* ══ BUBBLES ══ */
     #bubble-zone {
       flex: 0 0 25dvh;
       display: flex; align-items: center; justify-content: space-around;
-      padding: 0 8px;
-      border-bottom: 1px solid var(--border);
+      padding: 0 8px; border-bottom: 1px solid var(--border);
       background: var(--surface);
     }
-    .bubble { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; position: relative; flex: 1; }
+    .bubble { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; position: relative; flex: 1; }
     .bubble-ring {
-      width: 54px; height: 54px; border-radius: 50%;
+      width: 52px; height: 52px; border-radius: 50%;
       border: 2px solid var(--border2); background: var(--surface2);
       display: flex; align-items: center; justify-content: center;
       position: relative; transition: all 0.2s ease;
     }
     .bubble.active .bubble-ring {
       border-color: var(--cyan); background: var(--cyan-dim);
-      box-shadow: 0 0 16px var(--cyan-glow), inset 0 0 12px rgba(0,240,255,0.08);
+      box-shadow: 0 0 14px var(--cyan-glow), inset 0 0 10px rgba(0,240,255,0.08);
     }
-    .bubble-icon { font-size: 18px; line-height: 1; }
+    .bubble-icon { font-size: 17px; line-height: 1; }
     .bubble-badge {
       position: absolute; top: -2px; right: -2px;
       width: 14px; height: 14px; border-radius: 50%;
@@ -165,181 +138,152 @@
       display: none; align-items: center; justify-content: center;
     }
     .bubble-badge.visible { display: flex; }
-    .bubble-label { font-family: var(--mono); font-size: 7px; font-weight: 600; letter-spacing: 0.06em; color: var(--text-secondary); text-align: center; line-height: 1.3; text-transform: uppercase; }
+    .bubble-label { font-family: var(--mono); font-size: 7px; font-weight: 600; letter-spacing: 0.05em; color: var(--text-secondary); text-align: center; line-height: 1.3; text-transform: uppercase; }
     .bubble.active .bubble-label { color: var(--cyan); }
     .bubble::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 3px; border-radius: 2px; background: var(--cyan); transition: width 0.2s ease; }
-    .bubble.active::after { width: 22px; box-shadow: 0 0 8px var(--cyan); }
+    .bubble.active::after { width: 20px; box-shadow: 0 0 8px var(--cyan); }
 
     /* ══ OP ZONE ══ */
     #op-zone { flex: 1 1 0; overflow: hidden; display: flex; flex-direction: column; }
     .view-panel { display: none; flex-direction: column; height: 100%; overflow: hidden; padding: 10px 14px; }
     .view-panel.active { display: flex; }
     .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-shrink: 0; }
-    .panel-title { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: var(--cyan); text-transform: uppercase; }
+    .panel-title { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: var(--cyan); text-transform: uppercase; }
     .panel-meta { font-family: var(--mono); font-size: 8px; color: var(--text-muted); }
 
-    /* ══ STOCK LOCK STATE ══ */
-    #stock-lock {
-      display: none;
-      flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-    }
+    /* ══ STOCK ══ */
+    #stock-lock { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
     #stock-lock.show { display: flex; }
-    .lock-icon { font-size: 32px; opacity: 0.3; }
-    .lock-msg { font-family: var(--mono); font-size: 10px; color: var(--text-secondary); letter-spacing: 0.12em; text-align: center; line-height: 1.6; }
-    .lock-hint { font-family: var(--mono); font-size: 8px; color: var(--text-muted); letter-spacing: 0.08em; text-align: center; }
+    .lock-icon { font-size: 30px; opacity: 0.25; }
+    .lock-msg { font-family: var(--mono); font-size: 10px; color: var(--text-secondary); letter-spacing: 0.1em; text-align: center; line-height: 1.7; }
+    .lock-hint { font-family: var(--mono); font-size: 8px; color: var(--text-muted); text-align: center; }
 
-    /* ══ STOCK GRID ══ */
-    .stock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; flex: 1; overflow: hidden; }
-    .stock-row { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; position: relative; overflow: hidden; }
+    .stock-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; flex: 1; overflow: hidden; }
+    .stock-row { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; display: flex; flex-direction: column; gap: 2px; position: relative; overflow: hidden; }
     .stock-row::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
     .stock-row.ok::before    { background: var(--green); }
     .stock-row.low::before   { background: var(--amber); }
     .stock-row.empty::before { background: var(--red); }
-    .stock-name { font-family: var(--sans); font-size: 11px; font-weight: 600; color: var(--text-primary); }
-    .stock-aisle { font-family: var(--mono); font-size: 8px; color: var(--text-secondary); }
-    .stock-status-txt { font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .stock-name { font-family: var(--sans); font-size: 10.5px; font-weight: 600; color: var(--text-primary); }
+    .stock-dept { font-family: var(--mono); font-size: 7.5px; color: var(--text-secondary); }
+    .stock-status-txt { font-family: var(--mono); font-size: 7.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
     .stock-row.ok    .stock-status-txt { color: var(--green); }
     .stock-row.low   .stock-status-txt { color: var(--amber); }
     .stock-row.empty .stock-status-txt { color: var(--red); }
 
     /* ══ SHOPPING LIST ══ */
-    #list-empty {
-      display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-    }
+    #list-empty { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
     #list-empty.show { display: flex; }
-    .empty-icon { font-size: 28px; opacity: 0.25; }
-    .empty-msg { font-family: var(--mono); font-size: 9px; color: var(--text-secondary); letter-spacing: 0.1em; text-align: center; line-height: 1.6; }
+    .empty-icon { font-size: 26px; opacity: 0.2; }
+    .empty-msg { font-family: var(--mono); font-size: 9px; color: var(--text-secondary); letter-spacing: 0.08em; text-align: center; line-height: 1.7; }
 
-    .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; flex: 1; overflow: hidden; }
-    .shop-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 9px 10px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; position: relative; overflow: hidden; transition: all 0.15s ease; }
+    .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; flex: 1; overflow: hidden; }
+    .shop-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; cursor: pointer; position: relative; overflow: hidden; transition: all 0.15s; }
     .shop-card:active { transform: scale(0.97); }
-    .shop-card.checked { opacity: 0.45; border-color: var(--green); background: rgba(0,255,136,0.05); }
+    .shop-card.checked { opacity: 0.42; border-color: var(--green); background: rgba(0,255,136,0.04); }
     .shop-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
-    .shop-name { font-family: var(--sans); font-size: 11px; font-weight: 600; color: var(--text-primary); line-height: 1.2; }
+    .shop-name { font-family: var(--sans); font-size: 10.5px; font-weight: 600; color: var(--text-primary); line-height: 1.2; }
     .shop-qty { font-family: var(--mono); font-size: 9px; color: var(--cyan); font-weight: 700; }
-    .shop-check { font-size: 13px; opacity: 0; transition: opacity 0.15s; }
+    .shop-check { font-size: 12px; opacity: 0; transition: opacity 0.15s; }
     .shop-card.checked .shop-check { opacity: 1; }
-    .shop-aisle { font-family: var(--mono); font-size: 8px; color: var(--text-secondary); }
-    .shop-status-pill { display: inline-flex; align-items: center; padding: 1px 5px; border-radius: 3px; font-family: var(--mono); font-size: 7px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; align-self: flex-start; }
+    .shop-dept { font-family: var(--mono); font-size: 7.5px; color: var(--text-secondary); }
+    .shop-pill { display: inline-flex; padding: 1px 5px; border-radius: 3px; font-family: var(--mono); font-size: 7px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; align-self: flex-start; }
     .pill-ok    { background: var(--green-dim);  color: var(--green); }
     .pill-low   { background: var(--amber-dim);  color: var(--amber); }
     .pill-empty { background: var(--red-dim);    color: var(--red); }
     .pill-meal  { background: var(--purple-dim); color: var(--purple); }
 
     /* ══ MEAL PREP ══ */
-    .meal-toolbar { display: flex; gap: 6px; margin-bottom: 8px; flex-shrink: 0; }
+    .meal-toolbar { display: flex; gap: 6px; margin-bottom: 7px; flex-shrink: 0; }
     .meal-tool-btn {
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
-      padding: 7px 0; border-radius: 5px;
-      font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+      padding: 6px 0; border-radius: 5px;
+      font-family: var(--mono); font-size: 8.5px; font-weight: 700; letter-spacing: 0.07em;
       cursor: pointer; transition: all 0.15s; text-transform: uppercase; border: 1px solid;
     }
-    .meal-tool-btn.cyan-btn  { border-color: var(--cyan);   background: var(--cyan-dim);   color: var(--cyan); }
-    .meal-tool-btn.amber-btn { border-color: var(--amber);  background: var(--amber-dim);  color: var(--amber); }
-    .meal-tool-btn.purple-btn{ border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
     .meal-tool-btn:active { transform: scale(0.97); }
+    .cyan-btn   { border-color: var(--cyan);   background: var(--cyan-dim);   color: var(--cyan); }
+    .purple-btn { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
 
     .meal-list { display: flex; flex-direction: column; gap: 5px; flex: 1; overflow: hidden; }
     .meal-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; transition: border-color 0.15s; flex-shrink: 0; }
     .meal-block.expanded { border-color: var(--cyan); }
-    .meal-block.injected-block { border-color: var(--purple); }
-    .meal-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; cursor: pointer; }
+    .meal-block.injected-block { border-left: 3px solid var(--purple); }
+    .meal-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 11px; cursor: pointer; }
     .meal-title-wrap { display: flex; align-items: center; gap: 8px; }
-    .meal-icon { font-size: 16px; }
+    .meal-icon { font-size: 15px; }
     .meal-name { font-family: var(--sans); font-size: 11px; font-weight: 600; color: var(--text-primary); }
-    .meal-kcal { font-family: var(--mono); font-size: 8px; color: var(--text-secondary); }
-    .meal-header-right { display: flex; align-items: center; gap: 6px; }
-    .meal-injected-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--purple); box-shadow: 0 0 6px var(--purple); display: none; }
-    .meal-block.injected-block .meal-injected-pip { display: block; }
+    .meal-kcal { font-family: var(--mono); font-size: 7.5px; color: var(--text-secondary); }
+    .meal-header-right { display: flex; align-items: center; gap: 5px; }
     .meal-chevron { font-size: 10px; color: var(--text-secondary); transition: transform 0.15s; }
     .meal-block.expanded .meal-chevron { transform: rotate(90deg); color: var(--cyan); }
-    .meal-detail { display: none; padding: 0 12px 10px; gap: 8px; }
+    .meal-detail { display: none; padding: 0 11px 9px; gap: 7px; }
     .meal-block.expanded .meal-detail { display: flex; }
-    .macro-card { background: var(--void); border: 1px solid var(--border); border-radius: 5px; padding: 7px 10px; flex: 1; }
-    .macro-label { font-family: var(--mono); font-size: 7px; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+    .macro-card { background: var(--void); border: 1px solid var(--border); border-radius: 5px; padding: 6px 9px; flex: 1; }
+    .macro-label { font-family: var(--mono); font-size: 7px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
     .macro-row { display: flex; justify-content: space-between; }
     .macro-item { display: flex; flex-direction: column; align-items: center; }
     .macro-val { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--cyan); line-height: 1; }
     .macro-key { font-family: var(--mono); font-size: 7px; color: var(--text-secondary); margin-top: 2px; }
-    .meal-detail-right { display: flex; flex-direction: column; gap: 5px; }
-    .inject-btn {
+    .meal-detail-right { display: flex; flex-direction: column; gap: 4px; justify-content: center; }
+    .remove-btn {
       display: flex; align-items: center; justify-content: center; gap: 4px;
-      padding: 6px 10px; border-radius: 5px;
-      font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: 0.08em;
-      cursor: pointer; transition: all 0.15s; white-space: nowrap; text-transform: uppercase;
-      border: 1px solid var(--purple); background: var(--purple-dim); color: var(--purple);
+      padding: 5px 9px; border-radius: 5px;
+      border: 1px solid var(--red); background: var(--red-dim); color: var(--red);
+      font-family: var(--mono); font-size: 8px; font-weight: 700; letter-spacing: 0.07em;
+      cursor: pointer; white-space: nowrap; text-transform: uppercase;
     }
-    .inject-btn:active { transform: scale(0.95); }
-    .inject-btn.injected { border-color: var(--red); background: var(--red-dim); color: var(--red); }
-    .ingredients-mini { font-family: var(--mono); font-size: 7px; color: var(--text-muted); line-height: 1.5; }
+    .remove-btn:active { transform: scale(0.95); }
+    .ingr-mini { font-family: var(--mono); font-size: 7px; color: var(--text-muted); line-height: 1.5; }
 
-    /* ══ MODAL OVERLAY ══ */
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 500;
-      background: rgba(6,9,19,0.92);
-      display: none; flex-direction: column;
-      padding: 14px;
-    }
+    .meal-empty { display: flex; flex: 1; align-items: center; justify-content: center; }
+    .meal-empty-inner { text-align: center; }
+    .meal-empty-icon { font-size: 22px; opacity: 0.18; }
+    .meal-empty-msg { font-family: var(--mono); font-size: 8.5px; color: var(--text-muted); margin-top: 6px; letter-spacing: 0.09em; line-height: 1.6; }
+
+    /* ══ MODALS ══ */
+    .modal-overlay { position: fixed; inset: 0; z-index: 500; background: rgba(6,9,19,0.93); display: none; flex-direction: column; padding: 12px; }
     .modal-overlay.show { display: flex; }
-    .modal-box {
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      border-radius: 10px;
-      display: flex; flex-direction: column;
-      overflow: hidden;
-      max-height: 100%;
-    }
-    .modal-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .modal-title { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: var(--cyan); text-transform: uppercase; }
-    .modal-close { font-size: 16px; color: var(--text-secondary); cursor: pointer; padding: 2px 6px; background: none; border: none; line-height: 1; }
-    .modal-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 10px 14px; -webkit-overflow-scrolling: touch; }
+    .modal-box { background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; display: flex; flex-direction: column; overflow: hidden; max-height: 100%; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .modal-title { font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em; color: var(--cyan); text-transform: uppercase; }
+    .modal-close { font-size: 15px; color: var(--text-secondary); cursor: pointer; background: none; border: none; padding: 2px 6px; line-height: 1; }
+    .modal-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 8px 14px; -webkit-overflow-scrolling: touch; }
     .modal-footer { padding: 10px 14px; border-top: 1px solid var(--border); flex-shrink: 0; }
 
-    /* Meal Library rows */
-    .lib-row {
-      display: flex; align-items: center; gap: 10px;
-      padding: 9px 0; border-bottom: 1px solid var(--border);
-      cursor: pointer;
-    }
+    .lib-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
     .lib-row:last-child { border-bottom: none; }
-    .lib-check { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; }
+    .lib-check { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; transition: all 0.12s; }
     .lib-check.sel { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
-    .lib-info { flex: 1; }
+    .lib-info { flex: 1; min-width: 0; }
     .lib-name { font-family: var(--sans); font-size: 11px; font-weight: 600; color: var(--text-primary); }
-    .lib-ingr { font-family: var(--mono); font-size: 8px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+    .lib-ingr { font-family: var(--mono); font-size: 7.5px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .lib-macro { font-family: var(--mono); font-size: 8px; color: var(--cyan); text-align: right; flex-shrink: 0; line-height: 1.6; }
 
-    /* 5-day prep result */
-    .prep-section-label { font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em; color: var(--text-secondary); text-transform: uppercase; margin: 10px 0 6px; }
+    .confirm-btn { width: 100%; padding: 9px; border-radius: 6px; border: 1px solid var(--green); background: var(--green-dim); color: var(--green); font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; cursor: pointer; text-transform: uppercase; }
+    .confirm-btn:active { transform: scale(0.98); }
+
+    /* 5-day */
+    .prep-section-label { font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em; color: var(--text-secondary); text-transform: uppercase; margin: 10px 0 5px; }
     .prep-day-row { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); }
     .prep-day-name { font-family: var(--sans); font-size: 10px; font-weight: 600; color: var(--text-primary); }
-    .prep-day-meals { font-family: var(--mono); font-size: 8px; color: var(--text-muted); }
+    .prep-day-meals { font-family: var(--mono); font-size: 7.5px; color: var(--text-muted); }
     .prep-ingr-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(30,41,59,0.5); }
+    .prep-ingr-left {}
     .prep-ingr-name { font-family: var(--sans); font-size: 11px; color: var(--text-primary); }
+    .prep-ingr-dept { font-family: var(--mono); font-size: 7.5px; color: var(--text-muted); }
+    .prep-ingr-right { text-align: right; }
     .prep-ingr-qty { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--cyan); }
-    .prep-ingr-aisle { font-family: var(--mono); font-size: 8px; color: var(--text-muted); }
-    .add-list-btn {
-      width: 100%; padding: 9px; border-radius: 6px;
-      border: 1px solid var(--green); background: var(--green-dim); color: var(--green);
-      font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
-      cursor: pointer; text-transform: uppercase;
-    }
-    .add-list-btn:active { transform: scale(0.98); }
+    .prep-ingr-portions { font-family: var(--mono); font-size: 7.5px; color: var(--text-muted); }
 
     /* ══ CONFIG ══ */
     .config-list { display: flex; flex-direction: column; gap: 5px; flex: 1; overflow: hidden; }
-    .config-row { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-    .config-key { font-family: var(--mono); font-size: 9px; color: var(--text-secondary); letter-spacing: 0.08em; text-transform: uppercase; }
-    .config-val { font-family: var(--mono); font-size: 9px; font-weight: 700; color: var(--text-primary); }
+    .config-row { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 7px 12px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .config-key { font-family: var(--mono); font-size: 8.5px; color: var(--text-secondary); letter-spacing: 0.07em; text-transform: uppercase; }
+    .config-val { font-family: var(--mono); font-size: 8.5px; font-weight: 700; color: var(--text-primary); }
     .config-val.ok   { color: var(--green); }
     .config-val.warn { color: var(--amber); }
-    .config-val.info { color: var(--cyan);  }
-    .toggle-wrap { display: flex; align-items: center; gap: 6px; }
+    .config-val.info { color: var(--cyan); }
     .toggle { width: 30px; height: 16px; border-radius: 8px; background: var(--border); border: 1px solid var(--border2); position: relative; cursor: pointer; transition: background 0.2s; }
     .toggle.on { background: rgba(0,240,255,0.2); border-color: var(--cyan); }
     .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 10px; height: 10px; border-radius: 50%; background: var(--text-secondary); transition: all 0.2s; }
@@ -349,13 +293,16 @@
 <body>
 <div id="app">
 
-  <div id="alert-banner">▸ STORE SYNCED — STOCK INTEL ONLINE</div>
+  <div id="alert-banner"></div>
 
-  <!-- ══════════ HUD ══════════ -->
+  <!-- ══ HUD ══ -->
   <div id="hud">
     <div class="hud-top-row">
-      <span class="sys-label">▸ AIP GROCERY CONSOLE</span>
-      <span class="sys-id" id="sync-time">NODE-7F2A · --:--</span>
+      <div class="hud-title-block">
+        <span class="sys-label">▸ AIP GROCERY CONSOLE</span>
+        <span class="store-name-line">WEGMANS · 4721 Virginia Beach Blvd · VB, VA 23462</span>
+      </div>
+      <div class="sys-id" id="sync-time">NODE-VB01<br>--:--</div>
     </div>
     <div class="hud-metrics">
       <div class="metric-chip">
@@ -363,75 +310,54 @@
         <span class="metric-val">NET LIVE</span>
       </div>
       <div class="metric-chip">
-        <div class="metric-dot" id="store-dot" style="background:var(--red);box-shadow:0 0 5px var(--red)"></div>
-        <span class="metric-val" id="store-metric">NO STORE</span>
+        <div class="metric-dot" id="store-dot" style="background:var(--amber);box-shadow:0 0 5px var(--amber)"></div>
+        <span class="metric-val" id="store-metric">PENDING SYNC</span>
       </div>
       <div class="metric-chip">
         <div class="metric-dot cyan"></div>
         <span class="metric-val" id="list-count-chip">LIST: 0</span>
       </div>
     </div>
-    <div class="hud-store-row">
-      <select class="store-select" id="store-select" onchange="onStoreChange()">
-        <option value="">— SELECT STORE —</option>
-        <option value="whole_foods">Whole Foods · Downtown</option>
-        <option value="trader_joes">Trader Joe's · Midtown</option>
-        <option value="kroger">Kroger · Eastside</option>
-        <option value="costco">Costco · Warehouse District</option>
-        <option value="sprouts">Sprouts · Westside</option>
-      </select>
+    <div class="hud-btn-row">
       <button id="sync-btn" onclick="syncData()">
-        <span>⟳</span>
-        <span id="sync-label">SYNC</span>
+        <span>⟳</span> <span id="sync-label">SYNC WEGMANS INVENTORY</span>
       </button>
     </div>
   </div>
 
-  <!-- ══════════ BUBBLES ══════════ -->
+  <!-- ══ BUBBLES ══ -->
   <div id="bubble-zone">
     <div class="bubble active" id="tab-stock" onclick="switchTab('stock')">
-      <div class="bubble-ring">
-        <div class="bubble-icon">📡</div>
-        <div class="bubble-badge" id="badge-stock"></div>
-      </div>
+      <div class="bubble-ring"><div class="bubble-icon">📡</div><div class="bubble-badge" id="badge-stock"></div></div>
       <div class="bubble-label">Stock<br>Intel</div>
     </div>
     <div class="bubble" id="tab-shop" onclick="switchTab('shop')">
-      <div class="bubble-ring">
-        <div class="bubble-icon">📋</div>
-        <div class="bubble-badge" id="badge-shop"></div>
-      </div>
+      <div class="bubble-ring"><div class="bubble-icon">📋</div><div class="bubble-badge" id="badge-shop"></div></div>
       <div class="bubble-label">Shopping<br>List</div>
     </div>
     <div class="bubble" id="tab-meal" onclick="switchTab('meal')">
-      <div class="bubble-ring">
-        <div class="bubble-icon">🍽</div>
-        <div class="bubble-badge" id="badge-meal"></div>
-      </div>
+      <div class="bubble-ring"><div class="bubble-icon">🍽</div><div class="bubble-badge" id="badge-meal"></div></div>
       <div class="bubble-label">Meal<br>Prep</div>
     </div>
     <div class="bubble" id="tab-config" onclick="switchTab('config')">
-      <div class="bubble-ring">
-        <div class="bubble-icon">⚙️</div>
-        <div class="bubble-badge" id="badge-config"></div>
-      </div>
+      <div class="bubble-ring"><div class="bubble-icon">⚙️</div><div class="bubble-badge" id="badge-config"></div></div>
       <div class="bubble-label">System<br>Config</div>
     </div>
   </div>
 
-  <!-- ══════════ OP ZONE ══════════ -->
+  <!-- ══ OP ZONE ══ -->
   <div id="op-zone">
 
     <!-- STOCK INTEL -->
     <div class="view-panel active" id="panel-stock">
       <div class="panel-header">
         <span class="panel-title">▸ STOCK INTEL</span>
-        <span class="panel-meta" id="stock-timestamp">NO STORE SELECTED</span>
+        <span class="panel-meta" id="stock-timestamp">SYNC REQUIRED</span>
       </div>
       <div id="stock-lock" class="show">
         <div class="lock-icon">🔒</div>
-        <div class="lock-msg">NO STORE SELECTED<br>STOCK DATA UNAVAILABLE</div>
-        <div class="lock-hint">Select a store above and tap SYNC to load inventory</div>
+        <div class="lock-msg">INVENTORY NOT LOADED<br>TAP SYNC TO CONNECT</div>
+        <div class="lock-hint">Pulling live stock from Wegmans VB · (757) 271-0500</div>
       </div>
       <div class="stock-grid" id="stock-grid" style="display:none"></div>
     </div>
@@ -440,11 +366,11 @@
     <div class="view-panel" id="panel-shop">
       <div class="panel-header">
         <span class="panel-title">▸ SHOPPING LIST</span>
-        <span class="panel-meta"><span id="cart-tally">0</span> ITEMS</span>
+        <span class="panel-meta"><span id="cart-tally">0</span> ITEMS QUEUED</span>
       </div>
       <div id="list-empty" class="show">
         <div class="empty-icon">📋</div>
-        <div class="empty-msg">LIST IS EMPTY<br>INJECT MEALS TO POPULATE</div>
+        <div class="empty-msg">LIST IS EMPTY<br>INJECT MEALS IN MEAL PREP</div>
       </div>
       <div class="shop-grid" id="shop-grid" style="display:none"></div>
     </div>
@@ -460,20 +386,18 @@
         <button class="meal-tool-btn purple-btn" onclick="open5DayPrep()">◈ 5-DAY PREP</button>
       </div>
       <div class="meal-list" id="meal-list">
-        <div style="display:flex;flex:1;align-items:center;justify-content:center;">
-          <div style="text-align:center">
-            <div style="font-size:24px;opacity:0.2">🍽</div>
-            <div style="font-family:var(--mono);font-size:9px;color:var(--text-muted);margin-top:6px;letter-spacing:0.1em">NO MEALS ACTIVE<br>OPEN MEAL LIBRARY</div>
-          </div>
-        </div>
+        <div class="meal-empty"><div class="meal-empty-inner">
+          <div class="meal-empty-icon">🍽</div>
+          <div class="meal-empty-msg">NO MEALS ACTIVE<br>OPEN MEAL LIBRARY TO BEGIN</div>
+        </div></div>
       </div>
     </div>
 
-    <!-- SYSTEM CONFIG -->
+    <!-- CONFIG -->
     <div class="view-panel" id="panel-config">
       <div class="panel-header">
         <span class="panel-title">▸ SYSTEM CONFIG</span>
-        <span class="panel-meta">RUNTIME PARAMS</span>
+        <span class="panel-meta">WEGMANS VB NODE</span>
       </div>
       <div class="config-list" id="config-list"></div>
     </div>
@@ -481,7 +405,7 @@
   </div>
 </div>
 
-<!-- ══════════ MEAL LIBRARY MODAL ══════════ -->
+<!-- MEAL LIBRARY MODAL -->
 <div class="modal-overlay" id="modal-library">
   <div class="modal-box">
     <div class="modal-header">
@@ -490,12 +414,12 @@
     </div>
     <div class="modal-body" id="library-body"></div>
     <div class="modal-footer">
-      <button class="add-list-btn" onclick="confirmLibrarySelection()">▸ ACTIVATE SELECTED MEALS</button>
+      <button class="confirm-btn" onclick="confirmLibrarySelection()">▸ ACTIVATE SELECTED MEALS</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════ 5-DAY PREP MODAL ══════════ -->
+<!-- 5-DAY PREP MODAL -->
 <div class="modal-overlay" id="modal-5day">
   <div class="modal-box">
     <div class="modal-header">
@@ -504,162 +428,184 @@
     </div>
     <div class="modal-body" id="fiveday-body"></div>
     <div class="modal-footer">
-      <button class="add-list-btn" onclick="add5DayToList()">▸ ADD ALL TO SHOPPING LIST</button>
+      <button class="confirm-btn" onclick="add5DayToList()">▸ LOAD ALL TO SHOPPING LIST</button>
     </div>
   </div>
 </div>
 
 <script>
 /* ══════════════════════════════════════
-   MASTER MEAL DATABASE
+   WEGMANS VB GROCERY INDEX
+   Departments mapped to actual Wegmans VB store layout:
+   Produce (entrance), Bakery, Meat/Seafood, Dairy/Cheese (back wall),
+   Grocery aisles 1-14, Bulk Foods, Health & Wellness, Frozen, Wine/Beer
+══════════════════════════════════════ */
+const GROCERY_INDEX = {
+  // PRODUCE (front of store, entrance perimeter)
+  spinach:    { name: 'Baby Spinach',       dept: 'Produce · Entry'        },
+  avocado:    { name: 'Avocado',            dept: 'Produce · Entry'        },
+  banana:     { name: 'Banana',             dept: 'Produce · Entry'        },
+  broccoli:   { name: 'Broccoli',           dept: 'Produce · Entry'        },
+  tomato:     { name: 'Roma Tomatoes',      dept: 'Produce · Entry'        },
+  lemon:      { name: 'Lemon',              dept: 'Produce · Entry'        },
+  // MEAT & SEAFOOD (perimeter, past produce)
+  chicken:    { name: 'Chicken Breast',     dept: 'Meat · Perimeter'       },
+  salmon:     { name: 'Atlantic Salmon',    dept: 'Seafood · Perimeter'    },
+  turkey:     { name: 'Ground Turkey',      dept: 'Meat · Perimeter'       },
+  // DAIRY & CHEESE (back perimeter wall)
+  eggs:       { name: 'Free Range Eggs',    dept: 'Dairy · Back Wall'      },
+  milk:       { name: 'Organic Whole Milk', dept: 'Dairy · Back Wall'      },
+  cheese:     { name: 'Wegmans Cheddar',    dept: 'Cheese · Back Wall'     },
+  greek_yogurt:{ name: 'Greek Yogurt',      dept: 'Dairy · Back Wall'      },
+  butter:     { name: 'Unsalted Butter',    dept: 'Dairy · Back Wall'      },
+  // GROCERY AISLES (numbered 1-14 in store)
+  rice:       { name: 'Wegmans Brown Rice', dept: 'Grocery · Aisle 4'      },
+  pasta:      { name: 'Whole Wheat Pasta',  dept: 'Grocery · Aisle 4'      },
+  oats:       { name: 'Rolled Oats',        dept: 'Grocery · Aisle 5'      },
+  bread:      { name: 'Whole Grain Bread',  dept: 'Grocery · Aisle 5'      },
+  olive_oil:  { name: 'Extra Virgin Olive Oil', dept: 'Grocery · Aisle 6'  },
+  almond_butter:{ name: 'Almond Butter',    dept: 'Grocery · Aisle 7'      },
+  canned_beans:{ name: 'Black Beans (can)', dept: 'Grocery · Aisle 8'      },
+  quinoa:     { name: 'Organic Quinoa',     dept: 'Grocery · Aisle 4'      },
+  // BULK FOODS
+  almonds:    { name: 'Raw Almonds',        dept: 'Bulk Foods · Aisle 3'   },
+  // FROZEN
+  edamame:    { name: 'Shelled Edamame',    dept: 'Frozen · Back Aisle'    },
+  // HEALTH & WELLNESS
+  protein_pwd:{ name: 'Wegmans Whey Protein',dept:'Health · Wellness Aisle'},
+};
+
+/* ══════════════════════════════════════
+   MEAL DATABASE — 9 meals with Wegmans-specific ingredients
 ══════════════════════════════════════ */
 const MEAL_DB = [
   {
     id: 'grain_bowl', icon: '🥗', name: 'Power Grain Bowl', kcal: 520,
     macros: { P: 38, C: 54, F: 12 },
     ingredients: [
-      { id: 'chicken', qty: '150g' },
-      { id: 'rice',    qty: '80g dry' },
-      { id: 'spinach', qty: '60g' },
-      { id: 'avocado', qty: '½ fruit' },
+      { id: 'chicken',  qty: '150g' },
+      { id: 'rice',     qty: '80g dry' },
+      { id: 'spinach',  qty: '60g' },
+      { id: 'avocado',  qty: '½ fruit' },
+      { id: 'lemon',    qty: '½ fruit' },
     ]
   },
   {
     id: 'omelette', icon: '🍳', name: 'Protein Omelette', kcal: 340,
     macros: { P: 28, C: 6, F: 22 },
     ingredients: [
-      { id: 'eggs',    qty: '3 large' },
-      { id: 'spinach', qty: '40g' },
-      { id: 'cheese',  qty: '30g' },
+      { id: 'eggs',     qty: '3 large' },
+      { id: 'spinach',  qty: '40g' },
+      { id: 'cheese',   qty: '30g' },
+      { id: 'butter',   qty: '1 tsp' },
     ]
   },
   {
     id: 'smoothie', icon: '🥤', name: 'Green Recovery Shake', kcal: 290,
     macros: { P: 12, C: 38, F: 8 },
     ingredients: [
-      { id: 'spinach', qty: '50g' },
-      { id: 'avocado', qty: '¼ fruit' },
-      { id: 'milk',    qty: '300ml' },
-      { id: 'banana',  qty: '1 medium' },
+      { id: 'spinach',  qty: '50g' },
+      { id: 'avocado',  qty: '¼ fruit' },
+      { id: 'milk',     qty: '300ml' },
+      { id: 'banana',   qty: '1 medium' },
     ]
   },
   {
     id: 'chicken_rice', icon: '🍱', name: 'Meal Prep Classic', kcal: 480,
     macros: { P: 42, C: 50, F: 9 },
     ingredients: [
-      { id: 'chicken', qty: '180g' },
-      { id: 'rice',    qty: '90g dry' },
-      { id: 'broccoli',qty: '100g' },
+      { id: 'chicken',  qty: '180g' },
+      { id: 'rice',     qty: '90g dry' },
+      { id: 'broccoli', qty: '100g' },
+      { id: 'olive_oil',qty: '1 tbsp' },
     ]
   },
   {
-    id: 'avocado_toast', icon: '🥑', name: 'Avocado Egg Toast', kcal: 380,
-    macros: { P: 18, C: 32, F: 20 },
+    id: 'salmon_quinoa', icon: '🐟', name: 'Salmon & Quinoa', kcal: 560,
+    macros: { P: 44, C: 40, F: 20 },
     ingredients: [
-      { id: 'avocado', qty: '1 fruit' },
-      { id: 'eggs',    qty: '2 large' },
-      { id: 'bread',   qty: '2 slices' },
+      { id: 'salmon',   qty: '170g' },
+      { id: 'quinoa',   qty: '75g dry' },
+      { id: 'spinach',  qty: '80g' },
+      { id: 'lemon',    qty: '½ fruit' },
+      { id: 'olive_oil',qty: '1 tbsp' },
     ]
   },
   {
-    id: 'spinach_salad', icon: '🥬', name: 'Power Spinach Salad', kcal: 260,
-    macros: { P: 14, C: 18, F: 14 },
+    id: 'turkey_pasta', icon: '🍝', name: 'Turkey Bolognese', kcal: 510,
+    macros: { P: 36, C: 58, F: 11 },
     ingredients: [
-      { id: 'spinach', qty: '120g' },
-      { id: 'avocado', qty: '½ fruit' },
-      { id: 'eggs',    qty: '2 hard boiled' },
+      { id: 'turkey',   qty: '150g' },
+      { id: 'pasta',    qty: '80g dry' },
+      { id: 'tomato',   qty: '3 medium' },
+      { id: 'olive_oil',qty: '1 tbsp' },
+    ]
+  },
+  {
+    id: 'oat_bowl', icon: '🥣', name: 'Overnight Oat Bowl', kcal: 380,
+    macros: { P: 18, C: 52, F: 10 },
+    ingredients: [
+      { id: 'oats',        qty: '80g' },
+      { id: 'milk',        qty: '200ml' },
+      { id: 'banana',      qty: '1 medium' },
+      { id: 'almond_butter',qty:'1 tbsp' },
+    ]
+  },
+  {
+    id: 'avocado_eggs', icon: '🥑', name: 'Avocado Egg Toast', kcal: 390,
+    macros: { P: 18, C: 32, F: 22 },
+    ingredients: [
+      { id: 'avocado',  qty: '1 fruit' },
+      { id: 'eggs',     qty: '2 large' },
+      { id: 'bread',    qty: '2 slices' },
+      { id: 'lemon',    qty: '¼ fruit' },
+    ]
+  },
+  {
+    id: 'greek_bowl', icon: '🫙', name: 'Greek Protein Bowl', kcal: 420,
+    macros: { P: 32, C: 36, F: 14 },
+    ingredients: [
+      { id: 'greek_yogurt', qty: '200g' },
+      { id: 'almonds',      qty: '30g' },
+      { id: 'banana',       qty: '½ medium' },
+      { id: 'oats',         qty: '40g' },
     ]
   },
 ];
 
 /* ══════════════════════════════════════
-   GROCERY MASTER INDEX (for aisle + name lookup)
+   WEGMANS VB STOCK SIMULATION
+   Baseline stock levels per department
 ══════════════════════════════════════ */
-const GROCERY_INDEX = {
-  milk:     { name: 'Whole Milk',      aisle: 'A-04' },
-  eggs:     { name: 'Free Range Eggs', aisle: 'A-04' },
-  chicken:  { name: 'Chicken Breast',  aisle: 'B-02' },
-  spinach:  { name: 'Baby Spinach',    aisle: 'C-01' },
-  avocado:  { name: 'Avocado',         aisle: 'C-03' },
-  rice:     { name: 'Brown Rice',      aisle: 'D-06' },
-  banana:   { name: 'Banana',          aisle: 'C-02' },
-  cheese:   { name: 'Cheddar Cheese',  aisle: 'A-05' },
-  broccoli: { name: 'Broccoli',        aisle: 'C-01' },
-  bread:    { name: 'Whole Grain Bread',aisle: 'D-02' },
+const STOCK_BASELINE = {
+  spinach:'ok', avocado:'low', banana:'ok', broccoli:'ok', tomato:'ok', lemon:'ok',
+  chicken:'ok', salmon:'low', turkey:'ok',
+  eggs:'ok', milk:'ok', cheese:'ok', greek_yogurt:'ok', butter:'ok',
+  rice:'ok', pasta:'ok', oats:'ok', bread:'ok', olive_oil:'ok',
+  almond_butter:'ok', canned_beans:'ok', quinoa:'low',
+  almonds:'ok', edamame:'empty', protein_pwd:'ok',
 };
 
-/* Stock data — only populated after sync */
-let STOCK_DATA = {};
-
-const STOCK_SCHEMA_TEMPLATE = [
-  { id: 'milk',    stock_status: 'ok'    },
-  { id: 'eggs',    stock_status: 'ok'    },
-  { id: 'chicken', stock_status: 'low'   },
-  { id: 'spinach', stock_status: 'ok'    },
-  { id: 'avocado', stock_status: 'low'   },
-  { id: 'rice',    stock_status: 'empty' },
-  { id: 'banana',  stock_status: 'ok'    },
-  { id: 'cheese',  stock_status: 'ok'    },
-  { id: 'broccoli',stock_status: 'ok'    },
-  { id: 'bread',   stock_status: 'low'   },
-];
-
-/* ══════════════════════════════════════
-   STATE
-══════════════════════════════════════ */
-let storeSelected = false;
-let activeMealIds = [];   // IDs of meals user has activated
-let shoppingList  = {};   // { ingredientId: { qty, checked } }
-let libSelection  = [];   // temp selection in library modal
-
 const CONFIG_PARAMS = [
-  { key: 'SYNC INTERVAL',  val: '15 MIN',  cls: 'info' },
-  { key: 'STORE NETWORK',  val: 'ONLINE',  cls: 'ok', toggle: true, on: true  },
-  { key: 'PUSH ALERTS',    val: '',        cls: '', toggle: true, on: true  },
-  { key: 'LOW STOCK WARN', val: '',        cls: '', toggle: true, on: true  },
-  { key: 'AUTO-INJECT',    val: '',        cls: '', toggle: true, on: false },
-  { key: 'DATA CACHE',     val: '4.2 MB',  cls: 'warn' },
-  { key: 'SCHEMA VER',     val: 'v2.6.1',  cls: 'info' },
-  { key: 'LAST SYNC',      val: 'PENDING', cls: 'warn', id: 'cfg-sync' },
+  { key: 'STORE',         val: 'Wegmans VB',    cls: 'info' },
+  { key: 'PHONE',         val: '757-271-0500',   cls: 'ok' },
+  { key: 'HOURS',         val: '6AM – MIDNIGHT', cls: 'ok' },
+  { key: 'STORE NETWORK', val: '', toggle: true, on: true  },
+  { key: 'PUSH ALERTS',   val: '', toggle: true, on: true  },
+  { key: 'LOW STOCK WARN',val: '', toggle: true, on: true  },
+  { key: 'DATA CACHE',    val: '4.2 MB',         cls: 'warn' },
+  { key: 'LAST SYNC',     val: 'PENDING',        cls: 'warn', id: 'cfg-sync' },
 ];
 
-/* ══════════════════════════════════════
-   STORE CHANGE
-══════════════════════════════════════ */
-function onStoreChange() {
-  const sel = document.getElementById('store-select').value;
-  if (!sel) {
-    storeSelected = false;
-    STOCK_DATA = {};
-    updateStoreMetric(false);
-    renderStock();
-    return;
-  }
-  // Don't auto-sync — user must press SYNC to load inventory
-  storeSelected = false; // treat as dirty until synced
-  updateStoreMetric(false, true); // "pending"
-  renderStock();
-}
+/* ══ STATE ══ */
+let synced       = false;
+let STOCK_DATA   = {};
+let activeMealIds= [];
+let shoppingList = {};   // { id: { qty, checked } }
+let libSelection = [];
+let _5dayPlan    = null;
 
-function updateStoreMetric(online, pending) {
-  const dot = document.getElementById('store-dot');
-  const txt = document.getElementById('store-metric');
-  const sel = document.getElementById('store-select').value;
-  if (!sel) {
-    dot.style.background = 'var(--red)'; dot.style.boxShadow = '0 0 5px var(--red)';
-    txt.textContent = 'NO STORE';
-  } else if (pending) {
-    dot.style.background = 'var(--amber)'; dot.style.boxShadow = '0 0 5px var(--amber)';
-    txt.textContent = 'PENDING';
-  } else {
-    dot.style.background = 'var(--green)'; dot.style.boxShadow = '0 0 5px var(--green)';
-    txt.textContent = 'SYNCED';
-  }
-}
-
-/* ══════════════════════════════════════
-   TAB SWITCHER
-══════════════════════════════════════ */
+/* ══ TAB ══ */
 function switchTab(tab) {
   document.querySelectorAll('.bubble').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
@@ -667,108 +613,92 @@ function switchTab(tab) {
   document.getElementById('panel-' + tab).classList.add('active');
 }
 
-/* ══════════════════════════════════════
-   SYNC
-══════════════════════════════════════ */
+/* ══ SYNC ══ */
 function syncData() {
-  const sel = document.getElementById('store-select').value;
-  if (!sel) {
-    flashBanner('▸ SELECT A STORE FIRST', 'var(--amber)', 'var(--amber)');
-    return;
-  }
-
   const btn = document.getElementById('sync-btn');
   const lbl = document.getElementById('sync-label');
-  btn.classList.add('syncing'); lbl.textContent = '…';
+  btn.classList.add('syncing'); lbl.textContent = 'CONNECTING…';
 
   setTimeout(() => {
-    // Populate stock data
+    // Simulate live stock with slight randomness around baseline
     STOCK_DATA = {};
-    STOCK_SCHEMA_TEMPLATE.forEach(t => {
+    Object.entries(STOCK_BASELINE).forEach(([id, base]) => {
       const roll = Math.random();
-      let s = t.stock_status;
-      if (s === 'empty') s = roll < 0.3 ? 'low' : 'empty';
-      else if (s === 'low') s = roll < 0.4 ? 'ok' : 'low';
-      STOCK_DATA[t.id] = s;
+      if (base === 'empty') STOCK_DATA[id] = roll < 0.25 ? 'low' : 'empty';
+      else if (base === 'low') STOCK_DATA[id] = roll < 0.35 ? 'ok' : roll > 0.85 ? 'empty' : 'low';
+      else STOCK_DATA[id] = roll < 0.1 ? 'low' : 'ok';
     });
+    synced = true;
 
-    storeSelected = true;
     const now = new Date();
     const ts = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-    document.getElementById('sync-time').textContent = 'NODE-7F2A · ' + ts;
+    document.getElementById('sync-time').textContent = 'NODE-VB01\n' + ts;
+    document.getElementById('stock-timestamp').textContent = 'SYNCED ' + ts;
 
-    const stamp = document.getElementById('stock-timestamp');
-    if (stamp) stamp.textContent = 'SYNCED ' + ts;
+    const dot = document.getElementById('store-dot');
+    dot.style.background = 'var(--green)'; dot.style.boxShadow = '0 0 5px var(--green)';
+    document.getElementById('store-metric').textContent = 'STORE ONLINE';
+
     const cfgS = document.getElementById('cfg-sync');
     if (cfgS) { cfgS.textContent = ts; cfgS.className = 'config-val ok'; }
 
-    updateStoreMetric(true, false);
     renderAll();
-
-    btn.classList.remove('syncing'); btn.classList.add('synced'); lbl.textContent = '✓ OK';
-    flashBanner('▸ STORE SYNCED — STOCK INTEL ONLINE', 'var(--green)', 'var(--green)');
-    setTimeout(() => { btn.classList.remove('synced'); lbl.textContent = 'SYNC'; }, 1800);
-  }, 500);
+    btn.classList.remove('syncing'); btn.classList.add('synced'); lbl.textContent = '✓ SYNCED';
+    flash('▸ WEGMANS VB INVENTORY LOADED', 'var(--green)', 'var(--green)');
+    setTimeout(() => { btn.classList.remove('synced'); lbl.textContent = 'SYNC WEGMANS INVENTORY'; }, 2000);
+  }, 600);
 }
 
-function flashBanner(msg, color, borderColor) {
+function flash(msg, color, border) {
   const b = document.getElementById('alert-banner');
-  b.textContent = msg;
-  b.style.color = color;
-  b.style.borderBottomColor = borderColor;
+  b.textContent = msg; b.style.color = color; b.style.borderBottomColor = border;
+  b.style.background = `linear-gradient(135deg, ${border}18, ${border}08)`;
   b.classList.add('show');
-  setTimeout(() => b.classList.remove('show'), 1800);
+  setTimeout(() => b.classList.remove('show'), 2000);
 }
 
-/* ══════════════════════════════════════
-   RENDER: STOCK
-══════════════════════════════════════ */
+/* ══ RENDER STOCK ══ */
 function renderStock() {
-  const lock = document.getElementById('stock-lock');
-  const grid = document.getElementById('stock-grid');
+  const lock  = document.getElementById('stock-lock');
+  const grid  = document.getElementById('stock-grid');
   const stamp = document.getElementById('stock-timestamp');
 
-  if (!storeSelected) {
-    lock.classList.add('show');
-    grid.style.display = 'none';
-    stamp.textContent = 'NO STORE SELECTED';
+  if (!synced) {
+    lock.classList.add('show'); grid.style.display = 'none';
+    stamp.textContent = 'SYNC REQUIRED';
     document.getElementById('badge-stock').classList.remove('visible');
     return;
   }
 
-  lock.classList.remove('show');
-  grid.style.display = 'grid';
+  lock.classList.remove('show'); grid.style.display = 'grid';
 
-  grid.innerHTML = Object.entries(GROCERY_INDEX).map(([id, info]) => {
-    const s = STOCK_DATA[id] || 'ok';
-    const label = s === 'ok' ? 'IN STOCK' : s === 'low' ? 'LOW STOCK' : 'OUT OF STOCK';
+  // Show only items that appear in at least one meal (or all if none active)
+  const show = Object.keys(GROCERY_INDEX);
+  grid.innerHTML = show.map(id => {
+    const info = GROCERY_INDEX[id];
+    const s    = STOCK_DATA[id] || 'ok';
+    const lbl  = s === 'ok' ? 'IN STOCK' : s === 'low' ? 'LOW STOCK' : 'OUT OF STOCK';
     return `<div class="stock-row ${s}">
       <div class="stock-name">${info.name}</div>
-      <div class="stock-aisle">AISLE ${info.aisle}</div>
-      <div class="stock-status-txt">● ${label}</div>
+      <div class="stock-dept">${info.dept}</div>
+      <div class="stock-status-txt">● ${lbl}</div>
     </div>`;
   }).join('');
 
   const issues = Object.values(STOCK_DATA).filter(s => s !== 'ok').length;
-  const badge = document.getElementById('badge-stock');
+  const badge  = document.getElementById('badge-stock');
   if (issues > 0) { badge.textContent = issues; badge.classList.add('visible'); }
   else badge.classList.remove('visible');
 }
 
-/* ══════════════════════════════════════
-   RENDER: SHOPPING LIST
-══════════════════════════════════════ */
+/* ══ SHOPPING LIST ══ */
 function rebuildShoppingList() {
-  // Clear all injected items, rebuild from active meals only
   shoppingList = {};
   activeMealIds.forEach(mid => {
     const meal = MEAL_DB.find(m => m.id === mid);
     if (!meal) return;
     meal.ingredients.forEach(ing => {
-      if (!shoppingList[ing.id]) {
-        shoppingList[ing.id] = { qty: ing.qty, checked: false };
-      }
-      // Don't stack — ingredient already present, keep first qty listed
+      if (!shoppingList[ing.id]) shoppingList[ing.id] = { qty: ing.qty, checked: false };
     });
   });
 }
@@ -777,34 +707,28 @@ function renderShop() {
   const empty = document.getElementById('list-empty');
   const grid  = document.getElementById('shop-grid');
   const keys  = Object.keys(shoppingList);
-
   const count = keys.length;
+
   document.getElementById('cart-tally').textContent = count;
   document.getElementById('list-count-chip').textContent = 'LIST: ' + count;
-
   const badge = document.getElementById('badge-shop');
   if (count > 0) { badge.textContent = count; badge.classList.add('visible'); }
   else badge.classList.remove('visible');
 
-  if (count === 0) {
-    empty.classList.add('show'); grid.style.display = 'none'; return;
-  }
+  if (count === 0) { empty.classList.add('show'); grid.style.display = 'none'; return; }
   empty.classList.remove('show'); grid.style.display = 'grid';
 
   grid.innerHTML = keys.map(id => {
-    const item = shoppingList[id];
-    const info = GROCERY_INDEX[id] || { name: id, aisle: '?' };
-    const stock = STOCK_DATA[id];
-    const pillClass = !storeSelected ? 'pill-meal' : stock === 'ok' ? 'pill-ok' : stock === 'low' ? 'pill-low' : stock === 'empty' ? 'pill-empty' : 'pill-meal';
-    const pillText  = !storeSelected ? 'MEAL' : stock === 'ok' ? 'IN STOCK' : stock === 'low' ? 'LOW' : stock === 'empty' ? 'OUT' : 'MEAL';
+    const item  = shoppingList[id];
+    const info  = GROCERY_INDEX[id] || { name: id, dept: '—' };
+    const stock = synced ? STOCK_DATA[id] : null;
+    const pillCls = !stock ? 'pill-meal' : stock === 'ok' ? 'pill-ok' : stock === 'low' ? 'pill-low' : 'pill-empty';
+    const pillTxt = !stock ? 'MEAL' : stock === 'ok' ? 'IN STOCK' : stock === 'low' ? 'LOW' : 'OUT';
     return `<div class="shop-card ${item.checked ? 'checked' : ''}" onclick="toggleListItem('${id}')">
-      <div class="shop-card-top">
-        <div class="shop-name">${info.name}</div>
-        <div class="shop-check">✓</div>
-      </div>
+      <div class="shop-card-top"><div class="shop-name">${info.name}</div><div class="shop-check">✓</div></div>
       <div class="shop-qty">${item.qty}</div>
-      <div class="shop-aisle">AISLE ${info.aisle}</div>
-      <div class="shop-status-pill ${pillClass}">${pillText}</div>
+      <div class="shop-dept">${info.dept}</div>
+      <div class="shop-pill ${pillCls}">${pillTxt}</div>
     </div>`;
   }).join('');
 }
@@ -814,25 +738,20 @@ function toggleListItem(id) {
   renderShop();
 }
 
-/* ══════════════════════════════════════
-   RENDER: MEAL PREP
-══════════════════════════════════════ */
+/* ══ MEAL PREP ══ */
 function renderMeals() {
   const list = document.getElementById('meal-list');
   const meta = document.getElementById('meal-meta');
   meta.textContent = activeMealIds.length + ' ACTIVE';
-
   const badge = document.getElementById('badge-meal');
   if (activeMealIds.length > 0) { badge.textContent = activeMealIds.length; badge.classList.add('visible'); }
   else badge.classList.remove('visible');
 
   if (activeMealIds.length === 0) {
-    list.innerHTML = `<div style="display:flex;flex:1;align-items:center;justify-content:center;">
-      <div style="text-align:center">
-        <div style="font-size:24px;opacity:0.2">🍽</div>
-        <div style="font-family:var(--mono);font-size:9px;color:var(--text-muted);margin-top:6px;letter-spacing:0.1em">NO MEALS ACTIVE<br>OPEN MEAL LIBRARY</div>
-      </div>
-    </div>`;
+    list.innerHTML = `<div class="meal-empty"><div class="meal-empty-inner">
+      <div class="meal-empty-icon">🍽</div>
+      <div class="meal-empty-msg">NO MEALS ACTIVE<br>OPEN MEAL LIBRARY TO BEGIN</div>
+    </div></div>`;
     return;
   }
 
@@ -847,19 +766,13 @@ function renderMeals() {
       <div class="meal-header" onclick="toggleMealExpand('${meal.id}')">
         <div class="meal-title-wrap">
           <span class="meal-icon">${meal.icon}</span>
-          <div>
-            <div class="meal-name">${meal.name}</div>
-            <div class="meal-kcal">${meal.kcal} KCAL · ${meal.ingredients.length} INGR</div>
-          </div>
+          <div><div class="meal-name">${meal.name}</div><div class="meal-kcal">${meal.kcal} KCAL · ${meal.ingredients.length} ITEMS</div></div>
         </div>
-        <div class="meal-header-right">
-          <div class="meal-injected-pip"></div>
-          <span class="meal-chevron">▶</span>
-        </div>
+        <div class="meal-header-right"><span class="meal-chevron">▶</span></div>
       </div>
       <div class="meal-detail">
         <div class="macro-card">
-          <div class="macro-label">MACROS</div>
+          <div class="macro-label">MACROS / SERVING</div>
           <div class="macro-row">
             <div class="macro-item"><div class="macro-val">${meal.macros.P}g</div><div class="macro-key">PROT</div></div>
             <div class="macro-item"><div class="macro-val">${meal.macros.C}g</div><div class="macro-key">CARB</div></div>
@@ -867,8 +780,8 @@ function renderMeals() {
           </div>
         </div>
         <div class="meal-detail-right">
-          <button class="inject-btn injected" onclick="removeMeal(event,'${meal.id}')">✕ REMOVE</button>
-          <div class="ingredients-mini">${ingList}</div>
+          <button class="remove-btn" onclick="removeMeal(event,'${meal.id}')">✕ REMOVE</button>
+          <div class="ingr-mini">${ingList}</div>
         </div>
       </div>
     </div>`;
@@ -888,18 +801,13 @@ function removeMeal(e, id) {
   renderShop();
 }
 
-/* ══════════════════════════════════════
-   MEAL LIBRARY MODAL
-══════════════════════════════════════ */
+/* ══ MEAL LIBRARY ══ */
 function openMealLibrary() {
   libSelection = [...activeMealIds];
   renderLibraryBody();
   document.getElementById('modal-library').classList.add('show');
 }
-
-function closeMealLibrary() {
-  document.getElementById('modal-library').classList.remove('show');
-}
+function closeMealLibrary() { document.getElementById('modal-library').classList.remove('show'); }
 
 function renderLibraryBody() {
   const body = document.getElementById('library-body');
@@ -912,7 +820,7 @@ function renderLibraryBody() {
         <div class="lib-name">${meal.icon} ${meal.name}</div>
         <div class="lib-ingr">${ingNames}</div>
       </div>
-      <div class="lib-macro">${meal.kcal}cal<br>${meal.macros.P}g P</div>
+      <div class="lib-macro">${meal.kcal}cal<br>${meal.macros.P}P·${meal.macros.C}C</div>
     </div>`;
   }).join('');
 }
@@ -929,40 +837,35 @@ function confirmLibrarySelection() {
   closeMealLibrary();
   renderMeals();
   renderShop();
+  if (activeMealIds.length > 0) flash('▸ ' + activeMealIds.length + ' MEALS ACTIVATED · LIST UPDATED', 'var(--purple)', 'var(--purple)');
 }
 
-/* ══════════════════════════════════════
-   5-DAY MEAL PREP
-══════════════════════════════════════ */
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+/* ══ 5-DAY PREP ══ */
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
 
-// Generate a 5-day plan from active meals (cycle through them)
-// Returns { schedule: [{day, meals}], consolidated: [{id, name, aisle, totalQty, portions}] }
 function generate5DayPlan() {
   const pool = activeMealIds.length > 0
     ? activeMealIds.map(id => MEAL_DB.find(m => m.id === id)).filter(Boolean)
-    : MEAL_DB.slice(0, 3); // fallback: first 3
+    : MEAL_DB.slice(0, 4);
 
-  // Assign meals across 5 days — 2 meals per day cycling
+  // 2 meals per day — avoid same meal twice if pool allows
   const schedule = DAYS.map((day, i) => {
     const m1 = pool[i % pool.length];
-    const m2 = pool[(i + 1) % pool.length];
-    // Avoid same meal twice in a day if pool has enough
-    const meals = pool.length > 1 && m1.id === m2.id ? [m1] : [m1, m2];
+    const m2 = pool.length > 1 ? pool[(i + Math.ceil(pool.length / 2)) % pool.length] : null;
+    const meals = (m2 && m2.id !== m1.id) ? [m1, m2] : [m1];
     return { day, meals };
   });
 
-  // Consolidated ingredient list — count how many times each appears
-  // Store as { ingredientId: { name, aisle, qty (first encountered), portions (count of servings) } }
+  // Consolidated: count servings needed for each ingredient (no stacking)
   const consolidated = {};
   schedule.forEach(({ meals }) => {
     meals.forEach(meal => {
       meal.ingredients.forEach(ing => {
         if (!consolidated[ing.id]) {
-          const info = GROCERY_INDEX[ing.id] || { name: ing.id, aisle: '?' };
-          consolidated[ing.id] = { name: info.name, aisle: info.aisle, qty: ing.qty, portions: 0 };
+          const info = GROCERY_INDEX[ing.id] || { name: ing.id, dept: '?' };
+          consolidated[ing.id] = { name: info.name, dept: info.dept, qty: ing.qty, portions: 0 };
         }
-        consolidated[ing.id].portions += 1;
+        consolidated[ing.id].portions++;
       });
     });
   });
@@ -970,102 +873,78 @@ function generate5DayPlan() {
   return { schedule, consolidated };
 }
 
-let _5dayPlan = null;
-
 function open5DayPrep() {
   _5dayPlan = generate5DayPlan();
   renderFiveDayBody();
   document.getElementById('modal-5day').classList.add('show');
 }
-
-function close5Day() {
-  document.getElementById('modal-5day').classList.remove('show');
-}
+function close5Day() { document.getElementById('modal-5day').classList.remove('show'); }
 
 function renderFiveDayBody() {
-  const body = document.getElementById('fiveday-body');
   const { schedule, consolidated } = _5dayPlan;
+  const totalKcal = schedule.reduce((sum, {meals}) => sum + meals.reduce((s,m) => s + m.kcal, 0), 0);
 
-  const dayRows = schedule.map(({ day, meals }) => {
-    const mealNames = meals.map(m => m.icon + ' ' + m.name).join(' + ');
-    return `<div class="prep-day-row">
+  const dayRows = schedule.map(({day, meals}) =>
+    `<div class="prep-day-row">
       <div class="prep-day-name">${day}</div>
-      <div class="prep-day-meals">${mealNames}</div>
-    </div>`;
-  }).join('');
+      <div class="prep-day-meals">${meals.map(m => m.icon + ' ' + m.name).join(' + ')}</div>
+    </div>`
+  ).join('');
 
-  const ingrRows = Object.entries(consolidated).map(([id, data]) => {
-    const stock = STOCK_DATA[id];
-    const pillTxt = !storeSelected ? '' : stock === 'ok' ? '✓' : stock === 'low' ? '⚠' : stock === 'empty' ? '✕' : '';
-    const pillCol = !storeSelected ? '' : stock === 'ok' ? 'var(--green)' : stock === 'low' ? 'var(--amber)' : 'var(--red)';
+  const sortedIngr = Object.entries(consolidated).sort((a,b) => a[1].dept.localeCompare(b[1].dept));
+  const ingrRows = sortedIngr.map(([id, data]) => {
+    const stock  = synced ? STOCK_DATA[id] : null;
+    const flag   = !stock ? '' : stock === 'ok' ? '<span style="color:var(--green)">✓</span>' : stock === 'low' ? '<span style="color:var(--amber)">⚠</span>' : '<span style="color:var(--red)">✕</span>';
     return `<div class="prep-ingr-row">
-      <div>
-        <div class="prep-ingr-name">${data.name} <span style="color:${pillCol};font-size:10px">${pillTxt}</span></div>
-        <div class="prep-ingr-aisle">AISLE ${data.aisle}</div>
+      <div class="prep-ingr-left">
+        <div class="prep-ingr-name">${data.name} ${flag}</div>
+        <div class="prep-ingr-dept">${data.dept}</div>
       </div>
-      <div style="text-align:right">
+      <div class="prep-ingr-right">
         <div class="prep-ingr-qty">${data.qty}</div>
-        <div style="font-family:var(--mono);font-size:8px;color:var(--text-muted)">${data.portions}× servings</div>
+        <div class="prep-ingr-portions">${data.portions}× servings</div>
       </div>
     </div>`;
   }).join('');
 
-  const totalKcal = schedule.reduce((sum, { meals }) => sum + meals.reduce((s, m) => s + m.kcal, 0), 0);
-
-  body.innerHTML = `
+  document.getElementById('fiveday-body').innerHTML = `
+    <div style="font-family:var(--mono);font-size:7.5px;color:var(--text-muted);margin-bottom:6px">
+      WEGMANS VB · 5-DAY PLAN · ${Object.keys(consolidated).length} UNIQUE ITEMS · ${totalKcal} TOTAL KCAL
+    </div>
     <div class="prep-section-label">▸ DAILY SCHEDULE</div>
     ${dayRows}
-    <div class="prep-section-label" style="margin-top:14px">▸ CONSOLIDATED INGREDIENTS (no duplicates)</div>
-    <div style="font-family:var(--mono);font-size:8px;color:var(--text-muted);margin-bottom:8px">
-      ${Object.keys(consolidated).length} unique items · ${totalKcal} total kcal for 5 days
-    </div>
+    <div class="prep-section-label" style="margin-top:12px">▸ MASTER INGREDIENT LIST (sorted by dept, no duplicates)</div>
     ${ingrRows}
   `;
 }
 
 function add5DayToList() {
   if (!_5dayPlan) return;
-  const { consolidated } = _5dayPlan;
-  // Clear existing list, replace with 5-day consolidated
   shoppingList = {};
-  Object.entries(consolidated).forEach(([id, data]) => {
+  Object.entries(_5dayPlan.consolidated).forEach(([id, data]) => {
     shoppingList[id] = { qty: data.qty + ' ×' + data.portions, checked: false };
   });
   close5Day();
   renderShop();
   switchTab('shop');
-  flashBanner('▸ 5-DAY PREP LOADED TO SHOPPING LIST', 'var(--cyan)', 'var(--cyan)');
+  flash('▸ 5-DAY PREP LOADED · ' + Object.keys(shoppingList).length + ' ITEMS TO WEGMANS LIST', 'var(--cyan)', 'var(--cyan)');
 }
 
-/* ══════════════════════════════════════
-   RENDER: CONFIG
-══════════════════════════════════════ */
+/* ══ CONFIG ══ */
 function renderConfig() {
-  const list = document.getElementById('config-list');
-  list.innerHTML = CONFIG_PARAMS.map((row, i) => {
+  document.getElementById('config-list').innerHTML = CONFIG_PARAMS.map((row, i) => {
     if (row.toggle) return `<div class="config-row">
       <span class="config-key">${row.key}</span>
-      <div class="toggle-wrap"><div class="toggle ${row.on ? 'on' : ''}" onclick="toggleConfig(${i})"></div></div>
+      <div class="toggle ${row.on?'on':''}" onclick="CONFIG_PARAMS[${i}].on=!CONFIG_PARAMS[${i}].on;renderConfig()"></div>
     </div>`;
     return `<div class="config-row">
       <span class="config-key">${row.key}</span>
-      <span class="config-val ${row.cls}" ${row.id ? `id="${row.id}"` : ''}>${row.val}</span>
+      <span class="config-val ${row.cls||''}" ${row.id?`id="${row.id}"`:''}>${row.val}</span>
     </div>`;
   }).join('');
 }
 
-function toggleConfig(i) { CONFIG_PARAMS[i].on = !CONFIG_PARAMS[i].on; renderConfig(); }
-
-/* ══════════════════════════════════════
-   BOOT
-══════════════════════════════════════ */
-function renderAll() {
-  renderStock();
-  renderShop();
-  renderMeals();
-  renderConfig();
-}
-
+function renderAll() { renderStock(); renderShop(); renderMeals(); renderConfig(); }
 renderAll();
 </script>
 </body>
